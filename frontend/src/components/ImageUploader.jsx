@@ -60,10 +60,10 @@ function ImageUploader({ onImageSelect, isLoading }) {
     };
 
     return (
-        <div className="w-full max-w-2xl mx-auto">
+        <div className="w-full max-w-2xl mx-auto px-4">
             {!preview ? (
                 <div
-                    className={`upload-zone rounded-2xl p-12 text-center cursor-pointer ${dragOver ? 'drag-over' : ''
+                    className={`upload-zone rounded-2xl p-16 text-center cursor-pointer ${dragOver ? 'drag-over' : ''
                         }`}
                     onDragOver={handleDragOver}
                     onDragLeave={handleDragLeave}
@@ -79,10 +79,10 @@ function ImageUploader({ onImageSelect, isLoading }) {
                     />
 
                     {/* Upload Icon */}
-                    <div className="mb-6">
-                        <div className="w-20 h-20 mx-auto bg-gradient-to-br from-[#e50914]/20 to-[#e50914]/5 rounded-full flex items-center justify-center">
+                    <div className="mb-8">
+                        <div className="w-24 h-24 mx-auto bg-gradient-to-br from-[#e50914]/20 to-[#e50914]/5 rounded-full flex items-center justify-center">
                             <svg
-                                className="w-10 h-10 text-[#e50914]"
+                                className="w-12 h-12 text-[#e50914]"
                                 fill="none"
                                 stroke="currentColor"
                                 viewBox="0 0 24 24"
@@ -98,10 +98,10 @@ function ImageUploader({ onImageSelect, isLoading }) {
                     </div>
 
                     {/* Upload Text */}
-                    <h3 className="text-xl font-semibold text-white mb-2">
+                    <h3 className="text-2xl font-semibold text-white mb-3">
                         Drop your image here
                     </h3>
-                    <p className="text-[#b3b3b3] mb-4">
+                    <p className="text-[#b3b3b3] mb-5 text-lg">
                         or <span className="text-[#e50914] font-medium">browse</span> to choose a file
                     </p>
                     <p className="text-sm text-[#666]">
@@ -109,9 +109,9 @@ function ImageUploader({ onImageSelect, isLoading }) {
                     </p>
                 </div>
             ) : (
-                <div className="glass-card p-6 animate-fade-in">
+                <div className="glass-card p-8 animate-fade-in">
                     {/* Image Preview */}
-                    <div className="relative rounded-xl overflow-hidden mb-6 group">
+                    <div className="relative rounded-xl overflow-hidden mb-8 group">
                         <img
                             src={preview}
                             alt="Preview"

@@ -36,7 +36,7 @@ function AnalysisPage() {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                 },
-                timeout: 60000, // 60 second timeout
+                timeout: 60000,
             });
 
             if (response.data.success) {
@@ -65,126 +65,272 @@ function AnalysisPage() {
         setError(null);
     };
 
+    const features = [
+        {
+            icon: (
+                <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+            ),
+            title: 'High Quality Images',
+            description: 'Clear, well-lit photos ensure optimal accuracy'
+        },
+        {
+            icon: (
+                <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                </svg>
+            ),
+            title: 'Rapid Analysis',
+            description: 'AI-powered results within seconds'
+        },
+        {
+            icon: (
+                <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                </svg>
+            ),
+            title: 'Secure & Private',
+            description: 'Your images are never stored'
+        }
+    ];
+
     return (
-        <div className="min-h-screen pt-24 pb-16 px-6">
-            {/* Background */}
-            <div className="fixed inset-0 -z-10">
-                <div className="absolute inset-0 bg-[#141414]" />
-                <div className="absolute top-0 left-1/4 w-96 h-96 bg-[#e50914]/5 rounded-full blur-3xl" />
-                <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-[#e50914]/3 rounded-full blur-3xl" />
+        <div style={{ minHeight: '100vh', width: '100%', backgroundColor: '#0a0a0a' }}>
+            {/* Animated background orbs */}
+            <div style={{ position: 'fixed', inset: 0, overflow: 'hidden', pointerEvents: 'none' }}>
+                <div style={{
+                    position: 'absolute',
+                    top: '25%',
+                    left: '25%',
+                    width: '384px',
+                    height: '384px',
+                    background: 'rgba(229, 9, 20, 0.05)',
+                    borderRadius: '50%',
+                    filter: 'blur(48px)'
+                }}></div>
+                <div style={{
+                    position: 'absolute',
+                    bottom: '25%',
+                    right: '25%',
+                    width: '384px',
+                    height: '384px',
+                    background: 'rgba(229, 9, 20, 0.03)',
+                    borderRadius: '50%',
+                    filter: 'blur(48px)'
+                }}></div>
             </div>
 
-            <div className="max-w-4xl mx-auto">
-                {/* Header */}
-                <div className="text-center mb-12 animate-fade-in">
-                    <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">
-                        Oral Lesion <span className="gradient-text">Analysis</span>
-                    </h1>
-                    <p className="text-[#b3b3b3] max-w-xl mx-auto">
-                        Upload an image of an oral lesion to receive AI-powered classification.
-                        Our system performs two-level analysis for comprehensive results.
-                    </p>
-                </div>
+            {/* Spacer for fixed navbar */}
+            <div style={{ height: '80px' }}></div>
 
-                {/* Classification Info */}
-                <div className="glass-card p-6 mb-8 animate-fade-in" style={{ animationDelay: '0.1s' }}>
-                    <div className="flex flex-wrap items-center justify-center gap-6 text-sm">
-                        <div className="flex items-center gap-2">
-                            <div className="w-3 h-3 bg-[#e50914] rounded-full" />
-                            <span className="text-[#b3b3b3]">Level 1: Healthy vs Unhealthy</span>
+            {/* Main content wrapper - using flexbox for centering */}
+            <div style={{
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                width: '100%',
+                padding: '48px 16px'
+            }}>
+                {/* Centered container with max width */}
+                <div style={{ width: '100%', maxWidth: '896px' }}>
+
+                    {/* Header Section */}
+                    {!result && (
+                        <div className="animate-fadeInUp" style={{ textAlign: 'center', marginBottom: '48px' }}>
+                            <h1 style={{
+                                fontSize: 'clamp(2rem, 5vw, 3.5rem)',
+                                fontWeight: 'bold',
+                                color: 'white',
+                                marginBottom: '24px',
+                                lineHeight: 1.2
+                            }}>
+                                Oral Lesion <span className="gradient-text">Analysis</span>
+                            </h1>
+                            <p style={{
+                                fontSize: '1.125rem',
+                                color: '#b3b3b3',
+                                maxWidth: '640px',
+                                margin: '0 auto',
+                                lineHeight: 1.6
+                            }}>
+                                Upload an image to receive AI-powered classification with two-level diagnostic analysis
+                            </p>
                         </div>
-                        <div className="w-px h-4 bg-[#333]" />
-                        <div className="flex items-center gap-2">
-                            <div className="w-3 h-3 bg-[#f5c518] rounded-full" />
-                            <span className="text-[#b3b3b3]">Level 2: Malignant vs Benign</span>
-                        </div>
-                    </div>
-                </div>
+                    )}
 
-                {/* Main Content */}
-                {!result ? (
-                    <div className="animate-fade-in" style={{ animationDelay: '0.2s' }}>
-                        {/* Image Uploader */}
-                        <ImageUploader
-                            onImageSelect={handleImageSelect}
-                            isLoading={isLoading}
-                        />
+                    {/* Classification Legend */}
+                    {!result && (
+                        <div className="animate-fadeInUp glass-card" style={{
+                            maxWidth: '640px',
+                            margin: '0 auto 48px auto',
+                            padding: '24px 32px'
+                        }}>
+                            <div style={{
+                                display: 'flex',
+                                flexWrap: 'wrap',
+                                justifyContent: 'center',
+                                alignItems: 'center',
+                                gap: '32px'
+                            }}>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+                                    <div className="glow-red" style={{
+                                        width: '48px',
+                                        height: '48px',
+                                        background: 'linear-gradient(135deg, #e50914, #b20710)',
+                                        borderRadius: '12px',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center'
+                                    }}>
+                                        <span style={{ color: 'white', fontWeight: 'bold', fontSize: '18px' }}>1</span>
+                                    </div>
+                                    <div style={{ textAlign: 'left' }}>
+                                        <div style={{ color: 'white', fontWeight: 600 }}>Level 1</div>
+                                        <div style={{ color: '#666', fontSize: '14px' }}>Healthy vs Unhealthy</div>
+                                    </div>
+                                </div>
 
-                        {/* Error Message */}
-                        {error && (
-                            <div className="mt-6 p-4 bg-[#ff4757]/10 border border-[#ff4757]/20 rounded-xl text-center animate-fade-in">
-                                <p className="text-[#ff4757]">{error}</p>
+                                <div style={{ width: '1px', height: '48px', background: '#333' }}></div>
+
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+                                    <div className="glow-yellow" style={{
+                                        width: '48px',
+                                        height: '48px',
+                                        background: 'linear-gradient(135deg, #f5c518, #c49b00)',
+                                        borderRadius: '12px',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center'
+                                    }}>
+                                        <span style={{ color: 'white', fontWeight: 'bold', fontSize: '18px' }}>2</span>
+                                    </div>
+                                    <div style={{ textAlign: 'left' }}>
+                                        <div style={{ color: 'white', fontWeight: 600 }}>Level 2</div>
+                                        <div style={{ color: '#666', fontSize: '14px' }}>Malignant vs Benign</div>
+                                    </div>
+                                </div>
                             </div>
-                        )}
+                        </div>
+                    )}
 
-                        {/* Analyze Button */}
-                        {selectedImage && !isLoading && (
-                            <div className="mt-8 text-center animate-fade-in">
-                                <button
-                                    onClick={analyzeImage}
-                                    className="btn-primary text-lg px-12 py-4"
-                                >
-                                    <svg
-                                        className="w-5 h-5"
-                                        fill="none"
-                                        stroke="currentColor"
-                                        viewBox="0 0 24 24"
+                    {/* Main Analysis Area */}
+                    {!result ? (
+                        <div style={{ maxWidth: '640px', margin: '0 auto' }}>
+                            {/* Image Uploader */}
+                            <div className="animate-slideUp" style={{ marginBottom: '32px' }}>
+                                <ImageUploader
+                                    onImageSelect={handleImageSelect}
+                                    isLoading={isLoading}
+                                />
+                            </div>
+
+                            {/* Error Message */}
+                            {error && (
+                                <div className="animate-shake glass-card" style={{
+                                    padding: '24px',
+                                    marginBottom: '32px',
+                                    border: '1px solid rgba(255, 71, 87, 0.3)',
+                                    background: 'rgba(255, 71, 87, 0.1)'
+                                }}>
+                                    <div style={{ display: 'flex', alignItems: 'flex-start', gap: '16px' }}>
+                                        <div style={{
+                                            flexShrink: 0,
+                                            width: '40px',
+                                            height: '40px',
+                                            background: 'rgba(255, 71, 87, 0.2)',
+                                            borderRadius: '8px',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'center'
+                                        }}>
+                                            <svg style={{ width: '20px', height: '20px', color: '#ff4757' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                                            </svg>
+                                        </div>
+                                        <div style={{ flex: 1 }}>
+                                            <h4 style={{ color: '#ff4757', fontWeight: 600, marginBottom: '4px' }}>Analysis Error</h4>
+                                            <p style={{ color: '#ff9f9f', fontSize: '14px' }}>{error}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* Analyze Button */}
+                            {selectedImage && !isLoading && (
+                                <div className="animate-fadeInUp" style={{ textAlign: 'center', marginBottom: '48px' }}>
+                                    <button
+                                        onClick={analyzeImage}
+                                        className="btn-primary"
+                                        style={{ fontSize: '1.125rem', padding: '16px 48px' }}
                                     >
-                                        <path
-                                            strokeLinecap="round"
-                                            strokeLinejoin="round"
-                                            strokeWidth={2}
-                                            d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"
-                                        />
-                                    </svg>
-                                    Analyze Image
-                                </button>
-                            </div>
-                        )}
-                    </div>
-                ) : (
-                    <ResultCard result={result} onReset={handleReset} />
-                )}
+                                        <svg style={{ width: '20px', height: '20px' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+                                        </svg>
+                                        <span>Analyze Image</span>
+                                        <svg style={{ width: '20px', height: '20px' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                                        </svg>
+                                    </button>
+                                </div>
+                            )}
 
-                {/* Help Section */}
-                <div className="mt-16 grid grid-cols-1 md:grid-cols-3 gap-6 animate-fade-in" style={{ animationDelay: '0.3s' }}>
-                    {[
-                        {
-                            icon: (
-                                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                                </svg>
-                            ),
-                            title: 'Quality Images',
-                            description: 'Use clear, well-lit photos for best results'
-                        },
-                        {
-                            icon: (
-                                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                </svg>
-                            ),
-                            title: 'Quick Analysis',
-                            description: 'Results are ready in just a few seconds'
-                        },
-                        {
-                            icon: (
-                                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-                                </svg>
-                            ),
-                            title: 'Secure & Private',
-                            description: 'Your images are never stored'
-                        }
-                    ].map((item, index) => (
-                        <div key={index} className="glass-card p-6 text-center hover-lift">
-                            <div className="w-12 h-12 bg-[#e50914]/10 rounded-xl flex items-center justify-center text-[#e50914] mx-auto mb-4">
-                                {item.icon}
+                            {/* Features Grid */}
+                            <div style={{
+                                display: 'grid',
+                                gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
+                                gap: '24px',
+                                marginTop: '64px'
+                            }}>
+                                {features.map((feature, index) => (
+                                    <div
+                                        key={index}
+                                        className="glass-card hover-lift animate-fadeInUp"
+                                        style={{ padding: '24px', textAlign: 'center' }}
+                                    >
+                                        <div style={{
+                                            width: '56px',
+                                            height: '56px',
+                                            background: 'rgba(229, 9, 20, 0.1)',
+                                            borderRadius: '12px',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'center',
+                                            margin: '0 auto 16px auto',
+                                            color: '#e50914'
+                                        }}>
+                                            {feature.icon}
+                                        </div>
+                                        <h3 style={{ color: 'white', fontWeight: 600, marginBottom: '8px' }}>{feature.title}</h3>
+                                        <p style={{ color: '#666', fontSize: '14px' }}>{feature.description}</p>
+                                    </div>
+                                ))}
                             </div>
-                            <h3 className="text-white font-semibold mb-2">{item.title}</h3>
-                            <p className="text-[#666] text-sm">{item.description}</p>
+
+                            {/* Disclaimer */}
+                            <div className="glass-card animate-fadeInUp" style={{
+                                marginTop: '48px',
+                                padding: '24px',
+                                border: '1px solid rgba(245, 197, 24, 0.2)'
+                            }}>
+                                <div style={{ display: 'flex', alignItems: 'flex-start', gap: '16px' }}>
+                                    <svg style={{ width: '20px', height: '20px', color: '#f5c518', flexShrink: 0 }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
+                                    <div>
+                                        <h4 style={{ color: 'white', fontWeight: 600, marginBottom: '4px', fontSize: '14px' }}>Medical Disclaimer</h4>
+                                        <p style={{ color: '#666', fontSize: '12px', lineHeight: 1.5 }}>
+                                            This tool is for research and educational purposes only. Results should not replace professional medical diagnosis. Always consult with a qualified healthcare provider.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                    ))}
+                    ) : (
+                        <div className="animate-fadeInUp">
+                            <ResultCard result={result} onReset={handleReset} />
+                        </div>
+                    )}
                 </div>
             </div>
         </div>

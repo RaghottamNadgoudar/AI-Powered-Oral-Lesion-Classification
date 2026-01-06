@@ -4,7 +4,7 @@ function Navbar() {
     const location = useLocation();
 
     return (
-        <nav className="fixed top-0 left-0 right-0 z-50 bg-gradient-to-b from-[#141414] via-[#141414]/90 to-transparent">
+        <nav className="fixed top-0 left-0 right-0 z-50 bg-[#141414] border-b border-white/5 backdrop-blur-md">
             <div className="max-w-7xl mx-auto px-6 py-4">
                 <div className="flex items-center justify-between">
                     {/* Logo */}
@@ -34,8 +34,8 @@ function Navbar() {
                         <Link
                             to="/"
                             className={`text-sm font-medium transition-colors duration-200 ${location.pathname === '/'
-                                    ? 'text-white'
-                                    : 'text-[#b3b3b3] hover:text-white'
+                                ? 'text-white'
+                                : 'text-[#b3b3b3] hover:text-white'
                                 }`}
                         >
                             Home
@@ -43,8 +43,8 @@ function Navbar() {
                         <Link
                             to="/analysis"
                             className={`text-sm font-medium transition-colors duration-200 ${location.pathname === '/analysis'
-                                    ? 'text-white'
-                                    : 'text-[#b3b3b3] hover:text-white'
+                                ? 'text-white'
+                                : 'text-[#b3b3b3] hover:text-white'
                                 }`}
                         >
                             Analysis
