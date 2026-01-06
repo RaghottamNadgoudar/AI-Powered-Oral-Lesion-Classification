@@ -14,7 +14,7 @@ import os
 from utils.model_handler import predict_malignant_benign
 
 app = Flask(__name__)
-CORS(app, origins=["http://localhost:5173", "http://localhost:3000", "http://127.0.0.1:5173"])
+CORS(app, origins=["http://localhost:5173", "http://localhost:5174", "http://localhost:3000", "http://127.0.0.1:5173", "http://127.0.0.1:5174"])
 
 # Configuration
 # Hugging Face Spaces for healthy/unhealthy classification
