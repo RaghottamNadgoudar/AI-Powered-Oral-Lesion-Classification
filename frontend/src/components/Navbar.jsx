@@ -49,12 +49,15 @@ function Navbar() {
                         >
                             Analysis
                         </Link>
-                        <a
-                            href="#about"
-                            className="text-sm font-medium text-[#b3b3b3] hover:text-white transition-colors duration-200"
+                        <Link
+                            to="/about"
+                            className={`text-sm font-medium transition-colors duration-200 ${location.pathname === '/about'
+                                ? 'text-white'
+                                : 'text-[#b3b3b3] hover:text-white'
+                                }`}
                         >
                             About
-                        </a>
+                        </Link>
                     </div>
 
                     {/* CTA Button */}

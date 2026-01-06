@@ -33,13 +33,11 @@ function ImageUploader({ onImageSelect, isLoading }) {
     };
 
     const handleFile = (file) => {
-        // Validate file type
         if (!file.type.startsWith('image/')) {
             alert('Please upload an image file');
             return;
         }
 
-        // Create preview
         const reader = new FileReader();
         reader.onload = (e) => {
             setPreview(e.target.result);
@@ -60,29 +58,45 @@ function ImageUploader({ onImageSelect, isLoading }) {
     };
 
     return (
-        <div className="w-full max-w-2xl mx-auto px-4">
-            {!preview ? (
-                <div
-                    className={`upload-zone rounded-2xl p-16 text-center cursor-pointer ${dragOver ? 'drag-over' : ''
-                        }`}
-                    onDragOver={handleDragOver}
-                    onDragLeave={handleDragLeave}
-                    onDrop={handleDrop}
-                    onClick={triggerFileInput}
-                >
-                    <input
-                        type="file"
-                        ref={fileInputRef}
-                        onChange={handleFileInput}
-                        accept="image/*"
-                        className="hidden"
-                    />
+        <div style={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
+            <div style={{ width: '100%', maxWidth: '500px' }}>
+                {!preview ? (
+                    <div
+                        onClick={triggerFileInput}
+                        onDragOver={handleDragOver}
+                        onDragLeave={handleDragLeave}
+                        onDrop={handleDrop}
+                        style={{
+                            border: dragOver ? '2px solid #e50914' : '2px dashed rgba(229, 9, 20, 0.5)',
+                            borderRadius: '16px',
+                            padding: '48px 32px',
+                            textAlign: 'center',
+                            cursor: 'pointer',
+                            background: dragOver ? 'rgba(229, 9, 20, 0.1)' : 'rgba(15, 15, 15, 0.6)',
+                            transition: 'all 0.3s ease'
+                        }}
+                    >
+                        <input
+                            type="file"
+                            ref={fileInputRef}
+                            onChange={handleFileInput}
+                            accept="image/*"
+                            style={{ display: 'none' }}
+                        />
 
-                    {/* Upload Icon */}
-                    <div className="mb-8">
-                        <div className="w-24 h-24 mx-auto bg-gradient-to-br from-[#e50914]/20 to-[#e50914]/5 rounded-full flex items-center justify-center">
+                        {/* Upload Icon */}
+                        <div style={{
+                            width: '80px',
+                            height: '80px',
+                            margin: '0 auto 24px',
+                            background: 'linear-gradient(135deg, rgba(229, 9, 20, 0.2), rgba(229, 9, 20, 0.05))',
+                            borderRadius: '50%',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center'
+                        }}>
                             <svg
-                                className="w-12 h-12 text-[#e50914]"
+                                style={{ width: '40px', height: '40px', color: '#e50914' }}
                                 fill="none"
                                 stroke="currentColor"
                                 viewBox="0 0 24 24"
@@ -95,96 +109,165 @@ function ImageUploader({ onImageSelect, isLoading }) {
                                 />
                             </svg>
                         </div>
-                    </div>
 
-                    {/* Upload Text */}
-                    <h3 className="text-2xl font-semibold text-white mb-3">
-                        Drop your image here
-                    </h3>
-                    <p className="text-[#b3b3b3] mb-5 text-lg">
-                        or <span className="text-[#e50914] font-medium">browse</span> to choose a file
-                    </p>
-                    <p className="text-sm text-[#666]">
-                        Supports JPG, PNG, WEBP • Max 10MB
-                    </p>
-                </div>
-            ) : (
-                <div className="glass-card p-8 animate-fade-in">
-                    {/* Image Preview */}
-                    <div className="relative rounded-xl overflow-hidden mb-8 group">
-                        <img
-                            src={preview}
-                            alt="Preview"
-                            className="w-full h-64 object-cover"
-                        />
-                        {!isLoading && (
-                            <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-                                <button
+                        {/* Upload Text */}
+                        <h3 style={{
+                            fontSize: '1.5rem',
+                            fontWeight: '600',
+                            color: 'white',
+                            marginBottom: '12px'
+                        }}>
+                            Drop your image here
+                        </h3>
+                        <p style={{
+                            color: '#b3b3b3',
+                            marginBottom: '16px',
+                            fontSize: '1rem'
+                        }}>
+                            or <span style={{ color: '#e50914', fontWeight: '500' }}>browse</span> to choose a file
+                        </p>
+                        <p style={{
+                            fontSize: '0.875rem',
+                            color: '#666'
+                        }}>
+                            Supports JPG, PNG, WEBP • Max 10MB
+                        </p>
+                    </div>
+                ) : (
+                    <div className="glass-card" style={{ padding: '24px' }}>
+                        {/* Image Preview */}
+                        <div style={{
+                            position: 'relative',
+                            borderRadius: '12px',
+                            overflow: 'hidden',
+                            marginBottom: '24px'
+                        }}>
+                            <img
+                                src={preview}
+                                alt="Preview"
+                                style={{
+                                    width: '100%',
+                                    height: '200px',
+                                    objectFit: 'cover',
+                                    display: 'block'
+                                }}
+                            />
+                            {!isLoading && (
+                                <div
                                     onClick={clearImage}
-                                    className="bg-white/20 hover:bg-white/30 text-white px-4 py-2 rounded-lg backdrop-blur-sm transition-colors"
+                                    style={{
+                                        position: 'absolute',
+                                        inset: 0,
+                                        background: 'rgba(0,0,0,0.5)',
+                                        opacity: 0,
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        cursor: 'pointer',
+                                        transition: 'opacity 0.3s'
+                                    }}
+                                    onMouseEnter={(e) => e.currentTarget.style.opacity = 1}
+                                    onMouseLeave={(e) => e.currentTarget.style.opacity = 0}
                                 >
-                                    Change Image
-                                </button>
-                            </div>
-                        )}
+                                    <button style={{
+                                        background: 'rgba(255,255,255,0.2)',
+                                        color: 'white',
+                                        padding: '8px 16px',
+                                        borderRadius: '8px',
+                                        border: 'none',
+                                        cursor: 'pointer',
+                                        backdropFilter: 'blur(4px)'
+                                    }}>
+                                        Change Image
+                                    </button>
+                                </div>
+                            )}
 
-                        {/* Loading Overlay */}
-                        {isLoading && (
-                            <div className="absolute inset-0 bg-black/70 flex flex-col items-center justify-center">
-                                <div className="spinner mb-4"></div>
-                                <p className="text-white font-medium">Analyzing image...</p>
-                                <p className="text-[#b3b3b3] text-sm mt-1">This may take a few seconds</p>
-                            </div>
-                        )}
-                    </div>
-
-                    {/* File Info */}
-                    <div className="flex items-center justify-between text-sm">
-                        <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 bg-[#e50914]/20 rounded-lg flex items-center justify-center">
-                                <svg
-                                    className="w-5 h-5 text-[#e50914]"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    viewBox="0 0 24 24"
-                                >
-                                    <path
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                        strokeWidth={2}
-                                        d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
-                                    />
-                                </svg>
-                            </div>
-                            <div>
-                                <p className="text-white font-medium">Image uploaded</p>
-                                <p className="text-[#666]">Ready for analysis</p>
-                            </div>
+                            {/* Loading Overlay */}
+                            {isLoading && (
+                                <div style={{
+                                    position: 'absolute',
+                                    inset: 0,
+                                    background: 'rgba(0,0,0,0.7)',
+                                    display: 'flex',
+                                    flexDirection: 'column',
+                                    alignItems: 'center',
+                                    justifyContent: 'center'
+                                }}>
+                                    <div className="spinner" style={{ marginBottom: '16px' }}></div>
+                                    <p style={{ color: 'white', fontWeight: '500' }}>Analyzing image...</p>
+                                    <p style={{ color: '#b3b3b3', fontSize: '0.875rem', marginTop: '4px' }}>This may take a few seconds</p>
+                                </div>
+                            )}
                         </div>
 
-                        {!isLoading && (
-                            <button
-                                onClick={clearImage}
-                                className="text-[#b3b3b3] hover:text-[#e50914] transition-colors"
-                            >
-                                <svg
-                                    className="w-5 h-5"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    viewBox="0 0 24 24"
+                        {/* File Info */}
+                        <div style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'space-between',
+                            fontSize: '0.875rem'
+                        }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                                <div style={{
+                                    width: '40px',
+                                    height: '40px',
+                                    background: 'rgba(229, 9, 20, 0.2)',
+                                    borderRadius: '8px',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center'
+                                }}>
+                                    <svg
+                                        style={{ width: '20px', height: '20px', color: '#e50914' }}
+                                        fill="none"
+                                        stroke="currentColor"
+                                        viewBox="0 0 24 24"
+                                    >
+                                        <path
+                                            strokeLinecap="round"
+                                            strokeLinejoin="round"
+                                            strokeWidth={2}
+                                            d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+                                        />
+                                    </svg>
+                                </div>
+                                <div>
+                                    <p style={{ color: 'white', fontWeight: '500' }}>Image uploaded</p>
+                                    <p style={{ color: '#666' }}>Ready for analysis</p>
+                                </div>
+                            </div>
+
+                            {!isLoading && (
+                                <button
+                                    onClick={clearImage}
+                                    style={{
+                                        background: 'none',
+                                        border: 'none',
+                                        color: '#b3b3b3',
+                                        cursor: 'pointer',
+                                        padding: '8px'
+                                    }}
                                 >
-                                    <path
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                        strokeWidth={2}
-                                        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-                                    />
-                                </svg>
-                            </button>
-                        )}
+                                    <svg
+                                        style={{ width: '20px', height: '20px' }}
+                                        fill="none"
+                                        stroke="currentColor"
+                                        viewBox="0 0 24 24"
+                                    >
+                                        <path
+                                            strokeLinecap="round"
+                                            strokeLinejoin="round"
+                                            strokeWidth={2}
+                                            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                                        />
+                                    </svg>
+                                </button>
+                            )}
+                        </div>
                     </div>
-                </div>
-            )}
+                )}
+            </div>
         </div>
     );
 }
