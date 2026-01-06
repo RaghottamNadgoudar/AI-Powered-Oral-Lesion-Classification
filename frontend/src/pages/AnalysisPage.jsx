@@ -4,7 +4,7 @@ import Stepper, { Step } from '../components/Stepper';
 import ImageUploader from '../components/ImageUploader';
 import ResultCard from '../components/ResultCard';
 
-const API_BASE_URL = 'http://localhost:5000/api';
+const API_BASE_URL = 'https://ai-powered-oral-lesion-classification.onrender.com/api';
 
 function AnalysisPage() {
     const [selectedImage, setSelectedImage] = useState(null);
@@ -73,7 +73,7 @@ function AnalysisPage() {
         } catch (err) {
             console.error('Analysis error:', err);
             if (err.code === 'ECONNREFUSED' || err.message.includes('Network Error')) {
-                setError('Cannot connect to the server. Please make sure the backend is running on http://localhost:5000');
+                setError('Cannot connect to the server. Please try again later.');
             } else if (err.response) {
                 setError(err.response.data?.error || 'Server error occurred');
             } else {
