@@ -1,4 +1,4 @@
-# 🔬 AI-Powered Oral Lesion Classification
+ # 🔬 AI-Powered Oral Lesion Classification
 
 An intelligent web application for oral lesion classification using a two-level AI pipeline. The system first determines if a lesion is **healthy or unhealthy**, and if unhealthy, further classifies it as **malignant or benign**.
 
