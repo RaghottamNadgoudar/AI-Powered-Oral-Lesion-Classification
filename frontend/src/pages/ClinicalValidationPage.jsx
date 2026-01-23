@@ -42,13 +42,38 @@ function ClinicalValidationPage() {
             description: 'Advanced lesion flagged by AI as requiring urgent medical attention.',
             source: 'KIMS Hubballi',
             date: 'January 2026'
+        },
+        {
+            id: 4,
+            title: 'Case Study #4',
+            image: '/case-studies/case4_benign.jpg',
+            prediction: 'Benign',
+            confidence: 100.0,
+            isMalignant: false,
+            level1: { classification: 'Unhealthy', confidence: 63.5 },
+            level2: { classification: 'Benign', confidence: 100.0 },
+            description: 'Tongue lesion with benign characteristics from clinical validation.',
+            source: 'Deeksha Dental Clinic, Tumkur',
+            date: 'January 2026'
+        },
+        {
+            id: 5,
+            title: 'Case Study #5',
+            image: '/case-studies/case5_benign.jpg',
+            prediction: 'Benign',
+            confidence: 99.7,
+            isMalignant: false,
+            level1: { classification: 'Unhealthy', confidence: 95.2 },
+            level2: { classification: 'Benign', confidence: 99.7 },
+            description: 'Lower gum lesion presenting benign features during field testing.',
+            source: 'Deeksha Dental Clinic, Tumkur',
+            date: 'October 2024'
         }
     ];
 
     const stats = [
-        { label: 'Cases Tested', value: '3', icon: '📊' },
-        { label: 'Testing Source', value: 'KIMS Hubballi', icon: '🏥' },
-        { label: 'Testing Period', value: 'Jan 2026', icon: '📅' }
+        { label: 'Cases Tested', value: '5', icon: '📊' },
+        { label: 'Testing Sources', value: 'KIMS Hubballi & Deeksha Dental Clinic', icon: '🏥' }
     ];
 
     return (
@@ -237,15 +262,12 @@ function ClinicalValidationPage() {
 
                                 {/* Metadata */}
                                 <div style={{
-                                    display: 'flex',
-                                    justifyContent: 'space-between',
                                     fontSize: '0.75rem',
                                     color: '#666',
                                     paddingTop: '16px',
                                     borderTop: '1px solid #333'
                                 }}>
                                     <span>🏥 {caseStudy.source}</span>
-                                    <span>📅 {caseStudy.date}</span>
                                 </div>
                             </div>
                         </div>
@@ -269,7 +291,7 @@ function ClinicalValidationPage() {
                                 Medical Disclaimer
                             </h4>
                             <p style={{ fontSize: '0.875rem', color: '#d1d5db', lineHeight: 1.6 }}>
-                                These case studies demonstrate the AI model's performance on real clinical data from KIMS Hubballi.
+                                These case studies demonstrate the AI model's performance on real clinical data from KIMS Hubballi and Deeksha Dental Clinic, Tumkur.
                                 This tool is designed as a diagnostic aid and should not replace professional medical evaluation.
                                 All predictions should be verified by qualified healthcare professionals. Patient privacy has been
                                 maintained in accordance with medical ethics guidelines.
