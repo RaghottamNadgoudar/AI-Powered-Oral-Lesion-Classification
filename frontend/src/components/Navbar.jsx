@@ -50,6 +50,15 @@ function Navbar() {
                             Analysis
                         </Link>
                         <Link
+                            to="/validation"
+                            className={`text-sm font-medium transition-colors duration-200 ${location.pathname === '/validation'
+                                ? 'text-white'
+                                : 'text-[#b3b3b3] hover:text-white'
+                                }`}
+                        >
+                            Validation
+                        </Link>
+                        <Link
                             to="/about"
                             className={`text-sm font-medium transition-colors duration-200 ${location.pathname === '/about'
                                 ? 'text-white'
