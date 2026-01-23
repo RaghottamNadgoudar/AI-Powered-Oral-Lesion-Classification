@@ -4,7 +4,7 @@ import Stepper, { Step } from '../components/Stepper';
 import ImageUploader from '../components/ImageUploader';
 import ResultCard from '../components/ResultCard';
 
-const API_BASE_URL = 'https://ai-powered-oral-lesion-classification.onrender.com/api';
+const API_BASE_URL = 'http://localhost:5000/api';
 
 function AnalysisPage() {
     const [selectedImage, setSelectedImage] = useState(null);
