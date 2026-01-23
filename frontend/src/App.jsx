@@ -3,6 +3,7 @@ import Navbar from './components/Navbar';
 import RippleGrid from './components/RippleGrid';
 import HomePage from './pages/HomePage';
 import AnalysisPage from './pages/AnalysisPage';
+import ClinicalValidationPage from './pages/ClinicalValidationPage';
 import AboutPage from './pages/AboutPage';
 
 function App() {
@@ -37,6 +38,7 @@ function App() {
           <Routes>
             <Route path="/" element={<HomePage />} />
             <Route path="/analysis" element={<AnalysisPage />} />
+            <Route path="/validation" element={<ClinicalValidationPage />} />
             <Route path="/about" element={<AboutPage />} />
           </Routes>
         </div>
