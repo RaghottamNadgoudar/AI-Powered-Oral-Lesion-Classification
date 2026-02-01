@@ -1,10 +1,8 @@
 import { useState } from 'react';
-import axios from 'axios';
+import { Client, handle_file } from "@gradio/client";
 import Stepper, { Step } from '../components/Stepper';
 import ImageUploader from '../components/ImageUploader';
 import ResultCard from '../components/ResultCard';
-
-const API_BASE_URL = 'http://localhost:5000/api';
 
 function AnalysisPage() {
     const [selectedImage, setSelectedImage] = useState(null);
@@ -54,31 +52,79 @@ function AnalysisPage() {
         setError(null);
 
         try {
-            const formData = new FormData();
-            formData.append('image', selectedImage);
-
-            const response = await axios.post(`${API_BASE_URL}/classify`, formData, {
-                headers: {
-                    'Content-Type': 'multipart/form-data',
-                },
-                timeout: 60000,
+            // Level 1: Healthy/Unhealthy
+            console.log("Connecting to Level 1 Classifier...");
+            const client1 = await Client.connect("Praneel12/oral-health-classifier");
+            const result1 = await client1.predict("/classify_image", {
+                image: handle_file(selectedImage)
             });
 
-            if (response.data.success) {
-                // Add patient data to result for report generation
-                setResult({ ...response.data, patientData });
-            } else {
-                setError(response.data.error || 'Analysis failed');
+            console.log("Level 1 Result:", result1);
+
+            let isHealthy = false;
+            let level1Confidence = 0;
+            let classification1 = 'unhealthy';
+
+            if (result1 && result1.data && result1.data.length >= 3) {
+                // The result format from the space is expected to be [label_str, confidences_dict, percentages_str]
+                // Example: ["**⚠️ UNHEALTHY**", {...}, "15.63% healthy, 84.37% unhealthy"]
+                const percentages = result1.data[2];
+                const healthyMatch = percentages.match(/([\d.]+)%\s*healthy/i);
+                const unhealthyMatch = percentages.match(/([\d.]+)%\s*unhealthy/i);
+
+                const healthyConf = healthyMatch ? parseFloat(healthyMatch[1]) : 0;
+                const unhealthyConf = unhealthyMatch ? parseFloat(unhealthyMatch[1]) : 0;
+
+                isHealthy = healthyConf > unhealthyConf;
+                classification1 = isHealthy ? 'healthy' : 'unhealthy';
+                level1Confidence = isHealthy ? healthyConf : unhealthyConf;
             }
+
+            const level1Result = {
+                classification: classification1,
+                confidence: level1Confidence,
+                is_healthy: isHealthy
+            };
+
+            let level2Result = null;
+
+            // Level 2: Benign/Malignant (if unhealthy)
+            if (!isHealthy) {
+                console.log("Connecting to Level 2 Classifier...");
+                const client2 = await Client.connect("Praneel12/oral-lesion-tflite");
+                const result2 = await client2.predict("/predict", {
+                    image: handle_file(selectedImage)
+                });
+
+                console.log("Level 2 Result:", result2);
+
+                if (result2 && result2.data && result2.data.length > 0) {
+                    const resultText = result2.data[0];
+                    const isMalignant = resultText.toUpperCase().includes('MALIGNANT');
+                    const classification2 = isMalignant ? 'malignant' : 'benign';
+
+                    const confMatch = resultText.match(/Confidence:\s*([\d.]+)/);
+                    const level2Confidence = confMatch ? parseFloat(confMatch[1]) : 0;
+
+                    level2Result = {
+                        classification: classification2,
+                        confidence: level2Confidence,
+                        is_malignant: isMalignant
+                    };
+                }
+            }
+
+            setResult({
+                success: true,
+                level1: level1Result,
+                level2: level2Result,
+                final_result: isHealthy ? 'healthy' : (level2Result?.classification || 'unhealthy'),
+                patientData
+            });
+
         } catch (err) {
             console.error('Analysis error:', err);
-            if (err.code === 'ECONNREFUSED' || err.message.includes('Network Error')) {
-                setError('Cannot connect to the server. Please try again later.');
-            } else if (err.response) {
-                setError(err.response.data?.error || 'Server error occurred');
-            } else {
-                setError('An error occurred during analysis. Please try again.');
-            }
+            setError('An error occurred during AI analysis. Please try again.');
         } finally {
             setIsLoading(false);
         }
