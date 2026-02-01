@@ -1,34 +1,36 @@
-import { GoogleGenerativeAI } from '@google/generative-ai';
+import Groq from 'groq-sdk';
 
-const API_KEY = import.meta.env.GEMINI_API_KEY;
+const API_KEY = import.meta.env.VITE_GROQ_API_KEY;
 
-let genAI = null;
+let groqClient = null;
 
-const initializeGemini = () => {
-    if (!genAI && API_KEY) {
-        genAI = new GoogleGenerativeAI(API_KEY);
+const initializeGroq = () => {
+    if (!groqClient && API_KEY) {
+        groqClient = new Groq({
+            apiKey: API_KEY,
+            dangerouslyAllowBrowser: true // Required for client-side usage
+        });
     }
-    return genAI;
+    return groqClient;
 };
 
 export const generateOralHealthSuggestions = async (analysisResult) => {
     console.log('='.repeat(50));
-    console.log('🧠 Generating AI Health Suggestions...');
+    console.log('🧠 Generating AI Health Suggestions with GROQ...');
     console.log('='.repeat(50));
     console.log('Analysis Result:', JSON.stringify(analysisResult, null, 2));
 
     try {
-        const ai = initializeGemini();
-        if (!ai) {
-            console.log('⚠️ Gemini API not initialized (no API key), using default suggestions');
+        const client = initializeGroq();
+        if (!client) {
+            console.log('⚠️ GROQ API not initialized (no API key), using default suggestions');
             const defaults = getDefaultSuggestions(analysisResult);
             console.log('Default Suggestions:', JSON.stringify(defaults, null, 2));
             console.log('='.repeat(50));
             return defaults;
         }
 
-        console.log('✅ Gemini API initialized, calling model...');
-        const model = ai.getGenerativeModel({ model: 'gemini-2.0-flash' });
+        console.log('✅ GROQ API initialized, calling Llama 3.3 70B...');
 
         const resultType = analysisResult.level1?.is_healthy
             ? 'healthy oral tissue'
@@ -50,12 +52,26 @@ Example format:
 
 Provide practical, actionable advice specific to the analysis result.`;
 
-        console.log('📤 Sending prompt to Gemini...');
-        const result = await model.generateContent(prompt);
-        const response = await result.response;
-        const text = response.text();
+        console.log('📤 Sending prompt to GROQ...');
 
-        console.log('📥 Gemini Raw Response:', text);
+        const chatCompletion = await client.chat.completions.create({
+            messages: [
+                {
+                    role: "system",
+                    content: "You are a helpful dental health advisor AI. Provide practical, actionable oral health suggestions in JSON format."
+                },
+                {
+                    role: "user",
+                    content: prompt
+                }
+            ],
+            model: "llama-3.3-70b-versatile",
+            temperature: 0.7,
+            max_tokens: 500,
+        });
+
+        const text = chatCompletion.choices[0]?.message?.content;
+        console.log('📥 GROQ Raw Response:', text);
 
         // Parse JSON from response
         const jsonMatch = text.match(/\[[\s\S]*\]/);
@@ -78,7 +94,7 @@ Provide practical, actionable advice specific to the analysis result.`;
         console.log('='.repeat(50));
         return defaults;
     } catch (error) {
-        console.error('❌ Gemini API error:', error);
+        console.error('❌ GROQ API error:', error);
         const defaults = getDefaultSuggestions(analysisResult);
         console.log('Using default suggestions:', JSON.stringify(defaults, null, 2));
         console.log('='.repeat(50));

@@ -1,0 +1,10 @@
+flask==3.0.0
+flask-cors==4.0.0
+torch
+transformers
+Pillow
+gunicorn==21.2.0
+scikit-learn
+matplotlib
+tqdm
+numpy
