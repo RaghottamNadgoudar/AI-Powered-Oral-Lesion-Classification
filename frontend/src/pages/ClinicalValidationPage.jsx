@@ -67,12 +67,37 @@ function ClinicalValidationPage() {
             level2: { classification: 'Benign', confidence: 99.7 },
             description: 'Lower gum lesion presenting benign features during field testing.',
             source: 'Deeksha Dental Clinic, Tumkur',
-            date: 'October 2024'
+        },
+        {
+            id: 6,
+            title: 'Case Study #6',
+            image: '/case-studies/case6_malignant.png',
+            prediction: 'Malignant',
+            confidence: 99.8,
+            isMalignant: true,
+            level1: { classification: 'Unhealthy', confidence: 50.0 },
+            level2: { classification: 'Malignant', confidence: 99.8 },
+            description: 'Tongue lesion with visible white and red patches, flagged as potentially malignant.',
+            source: 'Deeksha Dental Clinic, Tumkur',
+            date: 'January 2026'
+        },
+        {
+            id: 7,
+            title: 'Case Study #7',
+            image: '/case-studies/case7_benign.png',
+            prediction: 'Benign',
+            confidence: 98.7,
+            isMalignant: false,
+            level1: { classification: 'Unhealthy', confidence: 50.0 },
+            level2: { classification: 'Benign', confidence: 98.7 },
+            description: 'Lesion with benign characteristics detected during screening at Deeksha Dental Clinic.',
+            source: 'Deeksha Dental Clinic, Tumkur',
+            date: 'January 2026'
         }
     ];
 
     const stats = [
-        { label: 'Cases Tested', value: '5', icon: '📊' },
+        { label: 'Cases Tested', value: '7', icon: '📊' },
         { label: 'Testing Sources', value: 'KIMS Hubballi & Deeksha Dental Clinic', icon: '🏥' }
     ];
 
