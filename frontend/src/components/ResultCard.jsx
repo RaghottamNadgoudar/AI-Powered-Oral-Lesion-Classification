@@ -28,6 +28,8 @@ function ResultCard({ result, onReset }) {
     if (!result) return null;
 
     const getResultConfig = () => {
+        console.log('ResultCard - result.level1:', result.level1);
+        console.log('ResultCard - is_healthy:', result.level1?.is_healthy);
         if (result.level1?.is_healthy) {
             return {
                 title: 'Healthy',

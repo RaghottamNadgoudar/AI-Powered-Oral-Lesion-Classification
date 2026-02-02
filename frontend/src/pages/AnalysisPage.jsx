@@ -77,7 +77,7 @@ function AnalysisPage() {
             const level1Result = data.level1 ? {
                 classification: data.level1.classification,
                 confidence: data.level1.confidence || 0,
-                is_healthy: data.is_healthy
+                is_healthy: data.level1.is_healthy
             } : null;
 
             const level2Result = data.level2 ? {
