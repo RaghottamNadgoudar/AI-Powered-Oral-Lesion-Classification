@@ -5,6 +5,7 @@ import HomePage from './pages/HomePage';
 import AnalysisPage from './pages/AnalysisPage';
 import ClinicalValidationPage from './pages/ClinicalValidationPage';
 import AboutPage from './pages/AboutPage';
+import CommunityPage from './pages/CommunityPage';
 
 function App() {
   return (
@@ -40,6 +41,7 @@ function App() {
             <Route path="/analysis" element={<AnalysisPage />} />
             <Route path="/validation" element={<ClinicalValidationPage />} />
             <Route path="/about" element={<AboutPage />} />
+            <Route path="/community" element={<CommunityPage />} />
           </Routes>
         </div>
       </div>

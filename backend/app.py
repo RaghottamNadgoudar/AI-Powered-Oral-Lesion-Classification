@@ -12,6 +12,7 @@ import requests
 import os
 
 from utils.model_handler import predict_malignant_benign
+from utils import supabase_client
 
 app = Flask(__name__)
 CORS(app, origins=[
@@ -282,6 +283,307 @@ def classify_level2_only():
     
     except Exception as e:
         print(f"Level 2 classification error: {e}")
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
+
+# ============================================
+# COMMUNITY FEATURES API ENDPOINTS
+# ============================================
+
+@app.route('/api/community/profile', methods=['POST'])
+def create_profile():
+    """Create a new anonymous profile"""
+    try:
+        data = request.get_json() or {}
+        role = data.get('role', 'user')
+        
+        profile = supabase_client.create_anonymous_profile(role)
+        
+        if profile:
+            return jsonify({
+                'success': True,
+                'profile': profile
+            })
+        return jsonify({
+            'success': False,
+            'error': 'Failed to create profile'
+        }), 500
+        
+    except Exception as e:
+        print(f"Create profile error: {e}")
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
+
+@app.route('/api/community/posts', methods=['GET', 'POST'])
+def handle_posts():
+    """List or create community posts"""
+    try:
+        if request.method == 'GET':
+            category = request.args.get('category')
+            limit = int(request.args.get('limit', 20))
+            offset = int(request.args.get('offset', 0))
+            
+            posts = supabase_client.get_posts(category, limit, offset)
+            
+            return jsonify({
+                'success': True,
+                'posts': posts
+            })
+        
+        elif request.method == 'POST':
+            data = request.get_json()
+            
+            if not data.get('profile_id'):
+                return jsonify({
+                    'success': False,
+                    'error': 'profile_id is required'
+                }), 400
+            
+            if not data.get('title') or not data.get('content'):
+                return jsonify({
+                    'success': False,
+                    'error': 'title and content are required'
+                }), 400
+            
+            post = supabase_client.create_post(
+                profile_id=data['profile_id'],
+                title=data['title'],
+                content=data['content'],
+                category=data.get('category', 'general'),
+                image_url=data.get('image_url')
+            )
+            
+            if post:
+                return jsonify({
+                    'success': True,
+                    'post': post
+                })
+            return jsonify({
+                'success': False,
+                'error': 'Failed to create post'
+            }), 500
+            
+    except Exception as e:
+        print(f"Posts error: {e}")
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
+
+@app.route('/api/community/posts/<post_id>', methods=['GET'])
+def get_post_detail(post_id):
+    """Get a single post with comments"""
+    try:
+        post = supabase_client.get_post(post_id)
+        comments = supabase_client.get_comments(post_id=post_id)
+        
+        if post:
+            return jsonify({
+                'success': True,
+                'post': post,
+                'comments': comments
+            })
+        return jsonify({
+            'success': False,
+            'error': 'Post not found'
+        }), 404
+        
+    except Exception as e:
+        print(f"Get post error: {e}")
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
+
+@app.route('/api/community/stories', methods=['GET', 'POST'])
+def handle_stories():
+    """List or create recovery stories"""
+    try:
+        if request.method == 'GET':
+            diagnosis_type = request.args.get('diagnosis_type')
+            featured_only = request.args.get('featured', '').lower() == 'true'
+            limit = int(request.args.get('limit', 20))
+            offset = int(request.args.get('offset', 0))
+            
+            stories = supabase_client.get_stories(diagnosis_type, featured_only, limit, offset)
+            
+            return jsonify({
+                'success': True,
+                'stories': stories
+            })
+        
+        elif request.method == 'POST':
+            data = request.get_json()
+            
+            if not data.get('profile_id'):
+                return jsonify({
+                    'success': False,
+                    'error': 'profile_id is required'
+                }), 400
+            
+            if not data.get('title') or not data.get('story_content'):
+                return jsonify({
+                    'success': False,
+                    'error': 'title and story_content are required'
+                }), 400
+            
+            story = supabase_client.create_story(
+                profile_id=data['profile_id'],
+                title=data['title'],
+                story_content=data['story_content'],
+                diagnosis_type=data.get('diagnosis_type'),
+                treatment_summary=data.get('treatment_summary'),
+                recovery_duration=data.get('recovery_duration'),
+                current_status=data.get('current_status'),
+                helpful_tips=data.get('helpful_tips')
+            )
+            
+            if story:
+                return jsonify({
+                    'success': True,
+                    'story': story
+                })
+            return jsonify({
+                'success': False,
+                'error': 'Failed to create story'
+            }), 500
+            
+    except Exception as e:
+        print(f"Stories error: {e}")
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
+
+@app.route('/api/community/stories/<story_id>', methods=['GET'])
+def get_story_detail(story_id):
+    """Get a single recovery story with comments"""
+    try:
+        story = supabase_client.get_story(story_id)
+        comments = supabase_client.get_comments(story_id=story_id)
+        
+        if story:
+            return jsonify({
+                'success': True,
+                'story': story,
+                'comments': comments
+            })
+        return jsonify({
+            'success': False,
+            'error': 'Story not found'
+        }), 404
+        
+    except Exception as e:
+        print(f"Get story error: {e}")
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
+
+@app.route('/api/community/comments', methods=['POST'])
+def create_comment():
+    """Create a new comment"""
+    try:
+        data = request.get_json()
+        
+        if not data.get('profile_id'):
+            return jsonify({
+                'success': False,
+                'error': 'profile_id is required'
+            }), 400
+        
+        if not data.get('content'):
+            return jsonify({
+                'success': False,
+                'error': 'content is required'
+            }), 400
+        
+        if not data.get('post_id') and not data.get('story_id'):
+            return jsonify({
+                'success': False,
+                'error': 'post_id or story_id is required'
+            }), 400
+        
+        comment = supabase_client.create_comment(
+            profile_id=data['profile_id'],
+            content=data['content'],
+            post_id=data.get('post_id'),
+            story_id=data.get('story_id'),
+            parent_comment_id=data.get('parent_comment_id')
+        )
+        
+        if comment:
+            return jsonify({
+                'success': True,
+                'comment': comment
+            })
+        return jsonify({
+            'success': False,
+            'error': 'Failed to create comment'
+        }), 500
+        
+    except Exception as e:
+        print(f"Create comment error: {e}")
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
+
+@app.route('/api/community/react', methods=['POST', 'DELETE'])
+def handle_reaction():
+    """Add or remove a reaction"""
+    try:
+        data = request.get_json()
+        
+        if not data.get('profile_id'):
+            return jsonify({
+                'success': False,
+                'error': 'profile_id is required'
+            }), 400
+        
+        reaction_type = data.get('reaction_type', 'upvote')
+        
+        if request.method == 'POST':
+            reaction = supabase_client.add_reaction(
+                profile_id=data['profile_id'],
+                reaction_type=reaction_type,
+                post_id=data.get('post_id'),
+                story_id=data.get('story_id'),
+                comment_id=data.get('comment_id')
+            )
+            
+            return jsonify({
+                'success': True,
+                'reaction': reaction
+            })
+        
+        elif request.method == 'DELETE':
+            supabase_client.remove_reaction(
+                profile_id=data['profile_id'],
+                reaction_type=reaction_type,
+                post_id=data.get('post_id'),
+                story_id=data.get('story_id'),
+                comment_id=data.get('comment_id')
+            )
+            
+            return jsonify({
+                'success': True,
+                'message': 'Reaction removed'
+            })
+            
+    except Exception as e:
+        print(f"Reaction error: {e}")
         return jsonify({
             'success': False,
             'error': str(e)

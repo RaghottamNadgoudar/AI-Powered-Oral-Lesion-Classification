@@ -22,7 +22,7 @@ class MalignantBenignClassifier:
         if model_path is None:
             # Default path relative to this file
             current_dir = os.path.dirname(os.path.abspath(__file__))
-            model_path = os.path.join(current_dir, '..', 'models', 'malignant_benign.tflite')
+            model_path = os.path.join(current_dir, '..', 'Models', 'malignant_benign (4).tflite')
         
         self.model_path = model_path
         self.interpreter = None

@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { Client, handle_file } from "@gradio/client";
 import Stepper, { Step } from '../components/Stepper';
 import ImageUploader from '../components/ImageUploader';
 import ResultCard from '../components/ResultCard';
@@ -52,73 +51,46 @@ function AnalysisPage() {
         setError(null);
 
         try {
-            // Level 1: Healthy/Unhealthy
-            console.log("Connecting to Level 1 Classifier...");
-            const client1 = await Client.connect("Praneel12/oral-health-classifier");
-            const result1 = await client1.predict("/classify_image", {
-                image: handle_file(selectedImage)
+            // Use backend API for classification
+            const formData = new FormData();
+            formData.append('image', selectedImage);
+
+            console.log("Sending image to backend API...");
+
+            const response = await fetch('http://localhost:5000/api/classify', {
+                method: 'POST',
+                body: formData
             });
 
-            console.log("Level 1 Result:", result1);
-
-            let isHealthy = false;
-            let level1Confidence = 0;
-            let classification1 = 'unhealthy';
-
-            if (result1 && result1.data && result1.data.length >= 3) {
-                // The result format from the space is expected to be [label_str, confidences_dict, percentages_str]
-                // Example: ["**⚠️ UNHEALTHY**", {...}, "15.63% healthy, 84.37% unhealthy"]
-                const percentages = result1.data[2];
-                const healthyMatch = percentages.match(/([\d.]+)%\s*healthy/i);
-                const unhealthyMatch = percentages.match(/([\d.]+)%\s*unhealthy/i);
-
-                const healthyConf = healthyMatch ? parseFloat(healthyMatch[1]) : 0;
-                const unhealthyConf = unhealthyMatch ? parseFloat(unhealthyMatch[1]) : 0;
-
-                isHealthy = healthyConf > unhealthyConf;
-                classification1 = isHealthy ? 'healthy' : 'unhealthy';
-                level1Confidence = isHealthy ? healthyConf : unhealthyConf;
+            if (!response.ok) {
+                throw new Error(`API error: ${response.status}`);
             }
 
-            const level1Result = {
-                classification: classification1,
-                confidence: level1Confidence,
-                is_healthy: isHealthy
-            };
+            const data = await response.json();
+            console.log("Backend API Result:", data);
 
-            let level2Result = null;
-
-            // Level 2: Benign/Malignant (if unhealthy)
-            if (!isHealthy) {
-                console.log("Connecting to Level 2 Classifier...");
-                const client2 = await Client.connect("Praneel12/oral-lesion-tflite");
-                const result2 = await client2.predict("/predict", {
-                    image: handle_file(selectedImage)
-                });
-
-                console.log("Level 2 Result:", result2);
-
-                if (result2 && result2.data && result2.data.length > 0) {
-                    const resultText = result2.data[0];
-                    const isMalignant = resultText.toUpperCase().includes('MALIGNANT');
-                    const classification2 = isMalignant ? 'malignant' : 'benign';
-
-                    const confMatch = resultText.match(/Confidence:\s*([\d.]+)/);
-                    const level2Confidence = confMatch ? parseFloat(confMatch[1]) : 0;
-
-                    level2Result = {
-                        classification: classification2,
-                        confidence: level2Confidence,
-                        is_malignant: isMalignant
-                    };
-                }
+            if (!data.success) {
+                throw new Error(data.error || 'Classification failed');
             }
+
+            // Transform the backend response to match the expected format
+            const level1Result = data.level1 ? {
+                classification: data.level1.classification,
+                confidence: data.level1.confidence || 0,
+                is_healthy: data.is_healthy
+            } : null;
+
+            const level2Result = data.level2 ? {
+                classification: data.level2.classification,
+                confidence: data.level2.confidence || 0,
+                is_malignant: data.level2.is_malignant
+            } : null;
 
             setResult({
                 success: true,
                 level1: level1Result,
                 level2: level2Result,
-                final_result: isHealthy ? 'healthy' : (level2Result?.classification || 'unhealthy'),
+                final_result: data.final_result,
                 patientData
             });
 
