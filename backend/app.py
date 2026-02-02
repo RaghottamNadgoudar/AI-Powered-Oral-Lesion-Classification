@@ -18,9 +18,11 @@ app = Flask(__name__)
 CORS(app, origins=[
     "http://localhost:5173", 
     "http://localhost:5174", 
+    "http://localhost:5175",
     "http://localhost:3000", 
     "http://127.0.0.1:5173", 
     "http://127.0.0.1:5174",
+    "http://127.0.0.1:5175",
     "https://ai-powered-oral-lesion-classification.vercel.app",  # Your Vercel deployment
     "https://*.vercel.app",  # Allow all Vercel preview deployments
 ], supports_credentials=True)
