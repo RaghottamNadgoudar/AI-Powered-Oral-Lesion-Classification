@@ -121,6 +121,30 @@ function AboutPage() {
                                     <span style={{ background: 'rgba(70, 211, 105, 0.2)', color: '#46d369', padding: '4px 12px', borderRadius: '6px', fontSize: '0.75rem' }}>Context-Aware</span>
                                 </div>
                             </div>
+
+                            <div style={{ background: 'rgba(15, 15, 15, 0.6)', borderRadius: '12px', padding: '20px', border: '1px solid #333' }}>
+                                <h3 style={{ color: 'white', fontWeight: '600', marginBottom: '8px' }}>CNN TFLite Model (Malignant/Benign Classification)</h3>
+                                <p style={{ color: '#b3b3b3', fontSize: '0.875rem', lineHeight: 1.6, marginBottom: '12px' }}>
+                                    For Level 2 classification, we use a Deep Convolutional Neural Network (CNN) optimized and converted to TensorFlow Lite format for efficient inference. The model was trained on oral lesion datasets to distinguish between benign and malignant lesions with high accuracy.
+                                </p>
+                                <div style={{ marginBottom: '12px' }}>
+                                    <p style={{ color: '#888', fontSize: '0.8rem', marginBottom: '8px' }}>
+                                        <strong style={{ color: '#b3b3b3' }}>Architecture:</strong> Deep CNN with multiple convolutional layers, batch normalization, and dense classification head
+                                    </p>
+                                    <p style={{ color: '#888', fontSize: '0.8rem', marginBottom: '8px' }}>
+                                        <strong style={{ color: '#b3b3b3' }}>Input:</strong> 304×304 RGB images
+                                    </p>
+                                    <p style={{ color: '#888', fontSize: '0.8rem' }}>
+                                        <strong style={{ color: '#b3b3b3' }}>Output:</strong> Binary classification (Benign vs Malignant) with confidence scores
+                                    </p>
+                                </div>
+                                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+                                    <span style={{ background: 'rgba(245, 197, 24, 0.2)', color: '#f5c518', padding: '4px 12px', borderRadius: '6px', fontSize: '0.75rem' }}>TensorFlow Lite</span>
+                                    <span style={{ background: 'rgba(245, 197, 24, 0.2)', color: '#f5c518', padding: '4px 12px', borderRadius: '6px', fontSize: '0.75rem' }}>Deep CNN</span>
+                                    <span style={{ background: 'rgba(245, 197, 24, 0.2)', color: '#f5c518', padding: '4px 12px', borderRadius: '6px', fontSize: '0.75rem' }}>Binary Classification</span>
+                                    <span style={{ background: 'rgba(245, 197, 24, 0.2)', color: '#f5c518', padding: '4px 12px', borderRadius: '6px', fontSize: '0.75rem' }}>Optimized Inference</span>
+                                </div>
+                            </div>
                         </div>
                     </section>
 
