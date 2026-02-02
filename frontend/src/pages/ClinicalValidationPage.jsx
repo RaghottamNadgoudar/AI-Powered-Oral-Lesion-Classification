@@ -93,11 +93,50 @@ function ClinicalValidationPage() {
             description: 'Lesion with benign characteristics detected during screening at Deeksha Dental Clinic.',
             source: 'Deeksha Dental Clinic, Tumkur',
             date: 'January 2026'
+        },
+        {
+            id: 8,
+            title: 'Case Study #8',
+            image: '/case-studies/case8_malignant.jpg',
+            prediction: 'Malignant',
+            confidence: 99.6,
+            isMalignant: true,
+            level1: { classification: 'Unhealthy', confidence: 71.2 },
+            level2: { classification: 'Malignant', confidence: 99.6 },
+            description: 'Severe oral lesion with multiple affected teeth, flagged as high-risk malignant case requiring immediate medical attention.',
+            source: 'KIMS Hubballi',
+            date: 'February 2026'
+        },
+        {
+            id: 9,
+            title: 'Case Study #9',
+            image: '/case-studies/case9_healthy.jpg',
+            prediction: 'Healthy',
+            confidence: 64.7,
+            isMalignant: false,
+            level1: { classification: 'Healthy', confidence: 64.7 },
+            level2: null,
+            description: 'Healthy oral cavity with no concerning lesions detected. Team member Raghottam\'s validation case.',
+            source: 'Team Validation',
+            date: 'February 2026'
+        },
+        {
+            id: 10,
+            title: 'Case Study #10',
+            image: '/case-studies/case10_malignant.jpg',
+            prediction: 'Malignant',
+            confidence: 90.7,
+            isMalignant: true,
+            level1: { classification: 'Unhealthy', confidence: 74.3 },
+            level2: { classification: 'Malignant', confidence: 90.7 },
+            description: 'Advanced oral lesion with visible tissue abnormalities, classified as malignant requiring urgent medical evaluation.',
+            source: 'KIMS Hubballi',
+            date: 'February 2026'
         }
     ];
 
     const stats = [
-        { label: 'Cases Tested', value: '7', icon: '📊' },
+        { label: 'Cases Tested', value: '10', icon: '📊' },
         { label: 'Testing Sources', value: 'KIMS Hubballi & Deeksha Dental Clinic', icon: '🏥' }
     ];
 
@@ -190,14 +229,24 @@ function ClinicalValidationPage() {
                             style={{
                                 padding: '0',
                                 overflow: 'hidden',
-                                border: `1px solid ${caseStudy.isMalignant ? 'rgba(239, 68, 68, 0.3)' : 'rgba(234, 179, 8, 0.3)'}`,
+                                border: `1px solid ${caseStudy.prediction === 'Healthy'
+                                    ? 'rgba(34, 197, 94, 0.3)'
+                                    : caseStudy.isMalignant
+                                        ? 'rgba(239, 68, 68, 0.3)'
+                                        : 'rgba(234, 179, 8, 0.3)'
+                                    }`,
                                 cursor: 'pointer',
                                 transition: 'all 0.3s ease',
                                 animationDelay: `${index * 0.1}s`
                             }}
                             onMouseEnter={(e) => {
                                 e.currentTarget.style.transform = 'translateY(-4px)';
-                                e.currentTarget.style.boxShadow = `0 8px 30px ${caseStudy.isMalignant ? 'rgba(239, 68, 68, 0.2)' : 'rgba(234, 179, 8, 0.2)'}`;
+                                e.currentTarget.style.boxShadow = `0 8px 30px ${caseStudy.prediction === 'Healthy'
+                                    ? 'rgba(34, 197, 94, 0.2)'
+                                    : caseStudy.isMalignant
+                                        ? 'rgba(239, 68, 68, 0.2)'
+                                        : 'rgba(234, 179, 8, 0.2)'
+                                    }`;
                             }}
                             onMouseLeave={(e) => {
                                 e.currentTarget.style.transform = 'translateY(0)';
@@ -228,7 +277,11 @@ function ClinicalValidationPage() {
                                     top: '12px',
                                     right: '12px',
                                     padding: '6px 12px',
-                                    background: caseStudy.isMalignant ? '#ef4444' : '#eab308',
+                                    background: caseStudy.prediction === 'Healthy'
+                                        ? '#22c55e'
+                                        : caseStudy.isMalignant
+                                            ? '#ef4444'
+                                            : '#eab308',
                                     borderRadius: '9999px',
                                     fontSize: '0.75rem',
                                     fontWeight: '600',
@@ -278,7 +331,11 @@ function ClinicalValidationPage() {
                                         <div style={{
                                             height: '100%',
                                             width: `${caseStudy.confidence}%`,
-                                            background: caseStudy.isMalignant ? '#ef4444' : '#eab308',
+                                            background: caseStudy.prediction === 'Healthy'
+                                                ? '#22c55e'
+                                                : caseStudy.isMalignant
+                                                    ? '#ef4444'
+                                                    : '#eab308',
                                             borderRadius: '9999px',
                                             transition: 'width 1s ease-out'
                                         }} />
