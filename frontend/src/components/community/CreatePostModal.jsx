@@ -72,53 +72,169 @@ function CreatePostModal({ isOpen, onClose, type = 'post', onSuccess }) {
 
     if (!isOpen) return null;
 
+    // Styles
+    const overlayStyle = {
+        position: 'fixed',
+        inset: 0,
+        zIndex: 50,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: '16px'
+    };
+
+    const backdropStyle = {
+        position: 'absolute',
+        inset: 0,
+        backgroundColor: 'rgba(0, 0, 0, 0.85)',
+        backdropFilter: 'blur(8px)'
+    };
+
+    const modalStyle = {
+        position: 'relative',
+        width: '100%',
+        maxWidth: '600px',
+        maxHeight: '85vh',
+        overflowY: 'auto',
+        background: 'linear-gradient(145deg, #2a2a2a 0%, #1a1a1a 100%)',
+        borderRadius: '20px',
+        border: '1px solid rgba(255, 255, 255, 0.1)',
+        boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)'
+    };
+
+    const headerStyle = {
+        position: 'sticky',
+        top: 0,
+        background: 'linear-gradient(135deg, #e50914 0%, #b20710 100%)',
+        padding: '20px 24px',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        borderRadius: '20px 20px 0 0'
+    };
+
+    const inputStyle = {
+        width: '100%',
+        backgroundColor: '#1a1a1a',
+        border: '2px solid rgba(255, 255, 255, 0.1)',
+        borderRadius: '12px',
+        padding: '14px 18px',
+        color: 'white',
+        fontSize: '15px',
+        outline: 'none',
+        transition: 'border-color 0.2s, box-shadow 0.2s'
+    };
+
+    const inputFocusStyle = {
+        borderColor: '#e50914',
+        boxShadow: '0 0 0 3px rgba(229, 9, 20, 0.2)'
+    };
+
+    const labelStyle = {
+        display: 'block',
+        color: 'white',
+        fontWeight: 600,
+        marginBottom: '10px',
+        fontSize: '14px',
+        letterSpacing: '0.5px'
+    };
+
+    const categoryButtonStyle = (isSelected) => ({
+        display: 'flex',
+        alignItems: 'center',
+        gap: '10px',
+        padding: '14px 18px',
+        borderRadius: '12px',
+        border: isSelected ? '2px solid #e50914' : '2px solid rgba(255, 255, 255, 0.1)',
+        background: isSelected ? 'rgba(229, 9, 20, 0.15)' : '#1a1a1a',
+        cursor: 'pointer',
+        transition: 'all 0.2s',
+        textAlign: 'left',
+        flex: 1
+    });
+
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+        <div style={overlayStyle}>
             {/* Backdrop */}
-            <div
-                className="absolute inset-0 bg-black/80 backdrop-blur-sm"
-                onClick={onClose}
-            />
+            <div style={backdropStyle} onClick={onClose} />
 
             {/* Modal */}
-            <div className="relative glass-card w-full max-w-2xl max-h-[90vh] overflow-y-auto animate-fade-in">
+            <div style={modalStyle} className="animate-fade-in">
                 {/* Header */}
-                <div className="sticky top-0 bg-[#2a2a2a] border-b border-white/10 px-6 py-4 flex items-center justify-between">
-                    <h2 className="text-xl font-bold text-white">
-                        {type === 'post' ? '💬 Ask the Community' : '✨ Share Your Story'}
-                    </h2>
+                <div style={headerStyle}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                        <span style={{ fontSize: '28px' }}>
+                            {type === 'post' ? '💬' : '✨'}
+                        </span>
+                        <div>
+                            <h2 style={{ fontSize: '20px', fontWeight: 700, color: 'white', margin: 0 }}>
+                                {type === 'post' ? 'Ask the Community' : 'Share Your Story'}
+                            </h2>
+                            <p style={{ fontSize: '13px', color: 'rgba(255,255,255,0.8)', margin: '4px 0 0 0' }}>
+                                {type === 'post' ? 'Get answers from our supportive community' : 'Inspire others with your journey'}
+                            </p>
+                        </div>
+                    </div>
                     <button
                         onClick={onClose}
-                        className="text-[#b3b3b3] hover:text-white transition-colors"
+                        style={{
+                            background: 'rgba(255,255,255,0.2)',
+                            border: 'none',
+                            borderRadius: '50%',
+                            width: '36px',
+                            height: '36px',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            cursor: 'pointer',
+                            transition: 'background 0.2s'
+                        }}
                     >
-                        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg style={{ width: '20px', height: '20px', color: 'white' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                         </svg>
                     </button>
                 </div>
 
                 {/* Anonymity Notice */}
-                <div className="px-6 py-3 bg-[#46d369]/10 border-b border-[#46d369]/20">
-                    <p className="text-[#46d369] text-sm flex items-center gap-2">
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-                        </svg>
-                        Your identity is anonymous. A random display name will be used.
-                    </p>
+                <div style={{
+                    padding: '14px 24px',
+                    background: 'rgba(70, 211, 105, 0.1)',
+                    borderBottom: '1px solid rgba(70, 211, 105, 0.2)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '10px'
+                }}>
+                    <svg style={{ width: '18px', height: '18px', color: '#46d369', flexShrink: 0 }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                    </svg>
+                    <span style={{ color: '#46d369', fontSize: '14px', fontWeight: 500 }}>
+                        🔒 Your identity is protected. A random display name will be assigned.
+                    </span>
                 </div>
 
                 {/* Form */}
-                <form onSubmit={handleSubmit} className="p-6 space-y-6">
+                <form onSubmit={handleSubmit} style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '24px' }}>
                     {error && (
-                        <div className="bg-[#ff4757]/10 border border-[#ff4757]/30 rounded-lg p-4 text-[#ff4757] text-sm">
-                            {error}
+                        <div style={{
+                            background: 'rgba(255, 71, 87, 0.1)',
+                            border: '1px solid rgba(255, 71, 87, 0.3)',
+                            borderRadius: '12px',
+                            padding: '14px 18px',
+                            color: '#ff4757',
+                            fontSize: '14px',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '10px'
+                        }}>
+                            <span>⚠️</span> {error}
                         </div>
                     )}
 
                     {/* Title */}
                     <div>
-                        <label className="block text-white font-medium mb-2">
-                            {type === 'post' ? 'Question Title' : 'Story Title'} *
+                        <label style={labelStyle}>
+                            {type === 'post' ? '📝 Question Title' : '📝 Story Title'} <span style={{ color: '#e50914' }}>*</span>
                         </label>
                         <input
                             type="text"
@@ -126,28 +242,40 @@ function CreatePostModal({ isOpen, onClose, type = 'post', onSuccess }) {
                             value={formData.title}
                             onChange={handleChange}
                             required
-                            placeholder={type === 'post' ? 'What would you like to ask?' : 'Give your story a title'}
-                            className="w-full bg-[#1f1f1f] border border-white/10 rounded-lg px-4 py-3 text-white placeholder-[#666] focus:outline-none focus:border-[#e50914] transition-colors"
+                            placeholder={type === 'post' ? 'What would you like to ask?' : 'Give your story a meaningful title'}
+                            style={inputStyle}
+                            onFocus={(e) => Object.assign(e.target.style, inputFocusStyle)}
+                            onBlur={(e) => {
+                                e.target.style.borderColor = 'rgba(255, 255, 255, 0.1)';
+                                e.target.style.boxShadow = 'none';
+                            }}
                         />
                     </div>
 
                     {/* Category (Posts only) */}
                     {type === 'post' && (
                         <div>
-                            <label className="block text-white font-medium mb-2">Category</label>
-                            <div className="grid grid-cols-2 gap-3">
+                            <label style={labelStyle}>🏷️ Category</label>
+                            <div style={{
+                                display: 'grid',
+                                gridTemplateColumns: 'repeat(2, 1fr)',
+                                gap: '12px'
+                            }}>
                                 {Object.entries(CATEGORIES).map(([key, cat]) => (
                                     <button
                                         key={key}
                                         type="button"
                                         onClick={() => setFormData(prev => ({ ...prev, category: key }))}
-                                        className={`p-3 rounded-lg border text-left transition-all ${formData.category === key
-                                                ? 'border-[#e50914] bg-[#e50914]/10'
-                                                : 'border-white/10 bg-[#1f1f1f] hover:border-white/30'
-                                            }`}
+                                        style={categoryButtonStyle(formData.category === key)}
                                     >
-                                        <span className="text-lg mr-2">{cat.icon}</span>
-                                        <span className="text-white text-sm font-medium">{cat.label}</span>
+                                        <span style={{ fontSize: '22px' }}>{cat.icon}</span>
+                                        <span style={{
+                                            color: formData.category === key ? 'white' : '#b3b3b3',
+                                            fontSize: '14px',
+                                            fontWeight: 600
+                                        }}>
+                                            {cat.label}
+                                        </span>
                                     </button>
                                 ))}
                             </div>
@@ -157,30 +285,30 @@ function CreatePostModal({ isOpen, onClose, type = 'post', onSuccess }) {
                     {/* Story-specific fields */}
                     {type === 'story' && (
                         <>
-                            <div className="grid grid-cols-2 gap-4">
+                            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '16px' }}>
                                 <div>
-                                    <label className="block text-white font-medium mb-2">Diagnosis Type</label>
+                                    <label style={labelStyle}>🩺 Diagnosis Type</label>
                                     <select
                                         name="diagnosis_type"
                                         value={formData.diagnosis_type}
                                         onChange={handleChange}
-                                        className="w-full bg-[#1f1f1f] border border-white/10 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-[#e50914] transition-colors"
+                                        style={{ ...inputStyle, cursor: 'pointer' }}
                                     >
-                                        <option value="">Select...</option>
+                                        <option value="">Select diagnosis...</option>
                                         {Object.entries(DIAGNOSIS_TYPES).map(([key, val]) => (
                                             <option key={key} value={key}>{val.label}</option>
                                         ))}
                                     </select>
                                 </div>
                                 <div>
-                                    <label className="block text-white font-medium mb-2">Current Status</label>
+                                    <label style={labelStyle}>📊 Current Status</label>
                                     <select
                                         name="current_status"
                                         value={formData.current_status}
                                         onChange={handleChange}
-                                        className="w-full bg-[#1f1f1f] border border-white/10 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-[#e50914] transition-colors"
+                                        style={{ ...inputStyle, cursor: 'pointer' }}
                                     >
-                                        <option value="">Select...</option>
+                                        <option value="">Select status...</option>
                                         {Object.entries(STATUS_OPTIONS).map(([key, val]) => (
                                             <option key={key} value={key}>{val.icon} {val.label}</option>
                                         ))}
@@ -189,14 +317,19 @@ function CreatePostModal({ isOpen, onClose, type = 'post', onSuccess }) {
                             </div>
 
                             <div>
-                                <label className="block text-white font-medium mb-2">Recovery Duration</label>
+                                <label style={labelStyle}>⏱️ Recovery Duration</label>
                                 <input
                                     type="text"
                                     name="recovery_duration"
                                     value={formData.recovery_duration}
                                     onChange={handleChange}
-                                    placeholder="e.g., 3 months, 1 year"
-                                    className="w-full bg-[#1f1f1f] border border-white/10 rounded-lg px-4 py-3 text-white placeholder-[#666] focus:outline-none focus:border-[#e50914] transition-colors"
+                                    placeholder="e.g., 3 months, 1 year, ongoing"
+                                    style={inputStyle}
+                                    onFocus={(e) => Object.assign(e.target.style, inputFocusStyle)}
+                                    onBlur={(e) => {
+                                        e.target.style.borderColor = 'rgba(255, 255, 255, 0.1)';
+                                        e.target.style.boxShadow = 'none';
+                                    }}
                                 />
                             </div>
                         </>
@@ -204,19 +337,24 @@ function CreatePostModal({ isOpen, onClose, type = 'post', onSuccess }) {
 
                     {/* Content */}
                     <div>
-                        <label className="block text-white font-medium mb-2">
-                            {type === 'post' ? 'Details' : 'Your Story'} *
+                        <label style={labelStyle}>
+                            {type === 'post' ? '💭 Details' : '📖 Your Story'} <span style={{ color: '#e50914' }}>*</span>
                         </label>
                         <textarea
                             name="content"
                             value={formData.content}
                             onChange={handleChange}
                             required
-                            rows={6}
+                            rows={5}
                             placeholder={type === 'post'
-                                ? 'Provide more details about your question...'
-                                : 'Share your journey - your diagnosis, treatment, recovery experience...'}
-                            className="w-full bg-[#1f1f1f] border border-white/10 rounded-lg px-4 py-3 text-white placeholder-[#666] focus:outline-none focus:border-[#e50914] transition-colors resize-none"
+                                ? 'Provide more details about your question. The more context you give, the better answers you\'ll receive...'
+                                : 'Share your journey - your diagnosis, treatment experience, challenges, and triumphs...'}
+                            style={{ ...inputStyle, resize: 'none', minHeight: '140px', lineHeight: 1.6 }}
+                            onFocus={(e) => Object.assign(e.target.style, inputFocusStyle)}
+                            onBlur={(e) => {
+                                e.target.style.borderColor = 'rgba(255, 255, 255, 0.1)';
+                                e.target.style.boxShadow = 'none';
+                            }}
                         />
                     </div>
 
@@ -224,52 +362,97 @@ function CreatePostModal({ isOpen, onClose, type = 'post', onSuccess }) {
                     {type === 'story' && (
                         <>
                             <div>
-                                <label className="block text-white font-medium mb-2">Treatment Summary</label>
+                                <label style={labelStyle}>💊 Treatment Summary</label>
                                 <textarea
                                     name="treatment_summary"
                                     value={formData.treatment_summary}
                                     onChange={handleChange}
                                     rows={3}
                                     placeholder="Briefly describe your treatment process..."
-                                    className="w-full bg-[#1f1f1f] border border-white/10 rounded-lg px-4 py-3 text-white placeholder-[#666] focus:outline-none focus:border-[#e50914] transition-colors resize-none"
+                                    style={{ ...inputStyle, resize: 'none', minHeight: '100px', lineHeight: 1.6 }}
+                                    onFocus={(e) => Object.assign(e.target.style, inputFocusStyle)}
+                                    onBlur={(e) => {
+                                        e.target.style.borderColor = 'rgba(255, 255, 255, 0.1)';
+                                        e.target.style.boxShadow = 'none';
+                                    }}
                                 />
                             </div>
 
                             <div>
-                                <label className="block text-white font-medium mb-2">💡 Helpful Tips for Others</label>
+                                <label style={labelStyle}>💡 Helpful Tips for Others</label>
                                 <textarea
                                     name="helpful_tips"
                                     value={formData.helpful_tips}
                                     onChange={handleChange}
                                     rows={3}
                                     placeholder="Any advice you'd give to someone going through a similar experience..."
-                                    className="w-full bg-[#1f1f1f] border border-white/10 rounded-lg px-4 py-3 text-white placeholder-[#666] focus:outline-none focus:border-[#e50914] transition-colors resize-none"
+                                    style={{ ...inputStyle, resize: 'none', minHeight: '100px', lineHeight: 1.6 }}
+                                    onFocus={(e) => Object.assign(e.target.style, inputFocusStyle)}
+                                    onBlur={(e) => {
+                                        e.target.style.borderColor = 'rgba(255, 255, 255, 0.1)';
+                                        e.target.style.boxShadow = 'none';
+                                    }}
                                 />
                             </div>
                         </>
                     )}
 
-                    {/* Submit Button */}
-                    <div className="flex justify-end gap-4 pt-4 border-t border-white/10">
+                    {/* Submit Buttons */}
+                    <div style={{
+                        display: 'flex',
+                        justifyContent: 'flex-end',
+                        gap: '12px',
+                        paddingTop: '16px',
+                        borderTop: '1px solid rgba(255, 255, 255, 0.1)',
+                        marginTop: '8px'
+                    }}>
                         <button
                             type="button"
                             onClick={onClose}
-                            className="btn-secondary px-6 py-2"
+                            style={{
+                                padding: '14px 28px',
+                                borderRadius: '12px',
+                                border: '2px solid rgba(255, 255, 255, 0.2)',
+                                background: 'transparent',
+                                color: '#b3b3b3',
+                                fontSize: '15px',
+                                fontWeight: 600,
+                                cursor: 'pointer',
+                                transition: 'all 0.2s'
+                            }}
                         >
                             Cancel
                         </button>
                         <button
                             type="submit"
                             disabled={isSubmitting}
-                            className="btn-primary px-6 py-2 disabled:opacity-50"
+                            style={{
+                                padding: '14px 28px',
+                                borderRadius: '12px',
+                                border: 'none',
+                                background: isSubmitting
+                                    ? 'rgba(229, 9, 20, 0.5)'
+                                    : 'linear-gradient(135deg, #e50914 0%, #b20710 100%)',
+                                color: 'white',
+                                fontSize: '15px',
+                                fontWeight: 600,
+                                cursor: isSubmitting ? 'not-allowed' : 'pointer',
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '10px',
+                                boxShadow: isSubmitting ? 'none' : '0 4px 15px rgba(229, 9, 20, 0.4)',
+                                transition: 'all 0.2s'
+                            }}
                         >
                             {isSubmitting ? (
                                 <>
-                                    <span className="spinner w-4 h-4 border-2"></span>
+                                    <span className="spinner" style={{ width: '16px', height: '16px', borderWidth: '2px' }}></span>
                                     Submitting...
                                 </>
                             ) : (
-                                type === 'post' ? 'Post Question' : 'Share Story'
+                                <>
+                                    {type === 'post' ? '🚀 Post Question' : '✨ Share Story'}
+                                </>
                             )}
                         </button>
                     </div>

@@ -1,25 +1,43 @@
 import { useState } from 'react';
-import { getAvatarUrl, formatTimeAgo, createComment } from '../../services/communityService';
+import { createComment, getAvatarUrl, formatTimeAgo } from '../../services/communityService';
 
 function CommentSection({ comments = [], postId = null, storyId = null, onCommentAdded }) {
     const [newComment, setNewComment] = useState('');
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [replyingTo, setReplyingTo] = useState(null);
+    const [replyText, setReplyText] = useState('');
 
-    const handleSubmit = async (e, parentCommentId = null) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        if (!newComment.trim()) return;
+        if (!newComment.trim() || isSubmitting) return;
 
         setIsSubmitting(true);
         try {
-            const comment = await createComment(newComment, postId, storyId, parentCommentId);
+            const comment = await createComment(newComment, postId, storyId, null);
             if (comment) {
                 setNewComment('');
+                onCommentAdded && onCommentAdded(comment);
+            }
+        } catch (err) {
+            console.error('Failed to post comment:', err);
+        } finally {
+            setIsSubmitting(false);
+        }
+    };
+
+    const handleReply = async (parentId) => {
+        if (!replyText.trim() || isSubmitting) return;
+
+        setIsSubmitting(true);
+        try {
+            const comment = await createComment(replyText, postId, storyId, parentId);
+            if (comment) {
+                setReplyText('');
                 setReplyingTo(null);
                 onCommentAdded && onCommentAdded(comment);
             }
         } catch (err) {
-            console.error('Failed to add comment:', err);
+            console.error('Failed to post reply:', err);
         } finally {
             setIsSubmitting(false);
         }
@@ -27,135 +45,193 @@ function CommentSection({ comments = [], postId = null, storyId = null, onCommen
 
     // Group comments by parent
     const topLevelComments = comments.filter(c => !c.parent_comment_id);
-    const repliesMap = comments.reduce((acc, comment) => {
-        if (comment.parent_comment_id) {
-            if (!acc[comment.parent_comment_id]) acc[comment.parent_comment_id] = [];
-            acc[comment.parent_comment_id].push(comment);
-        }
-        return acc;
-    }, {});
+    const replies = comments.filter(c => c.parent_comment_id);
 
-    const renderComment = (comment, isReply = false) => {
+    const getReplies = (commentId) => replies.filter(r => r.parent_comment_id === commentId);
+
+    const inputStyle = {
+        flex: 1,
+        backgroundColor: '#1a1a1a',
+        border: '2px solid rgba(255, 255, 255, 0.1)',
+        borderRadius: '12px',
+        padding: '12px 16px',
+        color: 'white',
+        fontSize: '14px',
+        outline: 'none',
+        transition: 'border-color 0.2s'
+    };
+
+    const buttonStyle = {
+        padding: '12px 24px',
+        borderRadius: '12px',
+        border: 'none',
+        background: 'linear-gradient(135deg, #e50914, #b20710)',
+        color: 'white',
+        fontSize: '14px',
+        fontWeight: 600,
+        cursor: 'pointer',
+        transition: 'all 0.2s',
+        display: 'flex',
+        alignItems: 'center',
+        gap: '6px'
+    };
+
+    const CommentItem = ({ comment, isReply = false }) => {
         const profile = comment.anonymous_profiles;
-        const replies = repliesMap[comment.id] || [];
 
         return (
-            <div key={comment.id} className={`${isReply ? 'ml-12 border-l-2 border-white/10 pl-4' : ''}`}>
-                <div className="flex gap-3 py-4">
-                    <img
-                        src={getAvatarUrl(profile?.avatar_seed || 'default')}
-                        alt="Avatar"
-                        className="w-8 h-8 rounded-full bg-[#2a2a2a] flex-shrink-0"
-                    />
-                    <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2 mb-1">
-                            <span className="text-white text-sm font-medium">
-                                {profile?.display_name || 'Anonymous'}
+            <div style={{
+                display: 'flex',
+                gap: '12px',
+                padding: isReply ? '12px 0 12px 40px' : '16px 0',
+                borderBottom: isReply ? 'none' : '1px solid rgba(255, 255, 255, 0.05)'
+            }}>
+                <img
+                    src={getAvatarUrl(profile?.avatar_seed || 'default')}
+                    alt="Avatar"
+                    style={{
+                        width: isReply ? '32px' : '40px',
+                        height: isReply ? '32px' : '40px',
+                        borderRadius: '50%',
+                        backgroundColor: '#2a2a2a',
+                        flexShrink: 0
+                    }}
+                />
+                <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+                        <span style={{ color: 'white', fontWeight: 600, fontSize: '13px' }}>
+                            {profile?.display_name || 'Anonymous'}
+                        </span>
+                        {comment.is_expert_reply && (
+                            <span style={{
+                                padding: '2px 8px',
+                                borderRadius: '10px',
+                                fontSize: '10px',
+                                fontWeight: 600,
+                                background: 'linear-gradient(135deg, #f5c518, #e6b800)',
+                                color: '#1a1a1a'
+                            }}>
+                                ⭐ EXPERT
                             </span>
-                            {comment.is_expert_reply && (
-                                <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-[#f5c518]/20 text-[#f5c518] border border-[#f5c518]/30">
-                                    Expert
-                                </span>
-                            )}
-                            <span className="text-[#666] text-xs">
-                                {formatTimeAgo(comment.created_at)}
-                            </span>
-                        </div>
-                        <p className="text-[#b3b3b3] text-sm break-words">
-                            {comment.content}
-                        </p>
-                        <div className="flex items-center gap-4 mt-2">
-                            <button className="text-[#666] hover:text-[#e50914] text-xs flex items-center gap-1 transition-colors">
-                                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
-                                </svg>
-                                {comment.upvote_count || 0}
-                            </button>
-                            {!isReply && (
-                                <button
-                                    onClick={() => setReplyingTo(replyingTo === comment.id ? null : comment.id)}
-                                    className="text-[#666] hover:text-white text-xs transition-colors"
-                                >
-                                    Reply
-                                </button>
-                            )}
-                        </div>
-
-                        {/* Reply form */}
-                        {replyingTo === comment.id && (
-                            <form onSubmit={(e) => handleSubmit(e, comment.id)} className="mt-3 flex gap-2">
-                                <input
-                                    type="text"
-                                    value={newComment}
-                                    onChange={(e) => setNewComment(e.target.value)}
-                                    placeholder="Write a reply..."
-                                    className="flex-1 bg-[#1f1f1f] border border-white/10 rounded-lg px-3 py-2 text-white text-sm placeholder-[#666] focus:outline-none focus:border-[#e50914]"
-                                />
-                                <button
-                                    type="submit"
-                                    disabled={isSubmitting || !newComment.trim()}
-                                    className="btn-primary px-4 py-2 text-sm disabled:opacity-50"
-                                >
-                                    {isSubmitting ? '...' : 'Reply'}
-                                </button>
-                            </form>
                         )}
+                        <span style={{ color: '#666', fontSize: '12px' }}>
+                            {formatTimeAgo(comment.created_at)}
+                        </span>
                     </div>
-                </div>
+                    <p style={{ color: '#c0c0c0', fontSize: '14px', margin: 0, lineHeight: 1.6 }}>
+                        {comment.content}
+                    </p>
 
-                {/* Render replies */}
-                {replies.map(reply => renderComment(reply, true))}
+                    {!isReply && (
+                        <button
+                            onClick={() => setReplyingTo(replyingTo === comment.id ? null : comment.id)}
+                            style={{
+                                background: 'none',
+                                border: 'none',
+                                color: '#888',
+                                fontSize: '12px',
+                                cursor: 'pointer',
+                                padding: '4px 0',
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '4px',
+                                marginTop: '4px'
+                            }}
+                        >
+                            <svg style={{ width: '14px', height: '14px' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6" />
+                            </svg>
+                            Reply
+                        </button>
+                    )}
+
+                    {/* Reply input */}
+                    {replyingTo === comment.id && (
+                        <div style={{ display: 'flex', gap: '12px', marginTop: '12px' }}>
+                            <input
+                                type="text"
+                                value={replyText}
+                                onChange={(e) => setReplyText(e.target.value)}
+                                placeholder="Write a reply..."
+                                style={{ ...inputStyle, padding: '10px 14px', fontSize: '13px' }}
+                                onFocus={(e) => e.target.style.borderColor = '#e50914'}
+                                onBlur={(e) => e.target.style.borderColor = 'rgba(255, 255, 255, 0.1)'}
+                            />
+                            <button
+                                onClick={() => handleReply(comment.id)}
+                                disabled={isSubmitting}
+                                style={{ ...buttonStyle, padding: '10px 18px', fontSize: '13px' }}
+                            >
+                                {isSubmitting ? '...' : 'Reply'}
+                            </button>
+                        </div>
+                    )}
+
+                    {/* Nested replies */}
+                    {getReplies(comment.id).map(reply => (
+                        <CommentItem key={reply.id} comment={reply} isReply />
+                    ))}
+                </div>
             </div>
         );
     };
 
     return (
-        <div className="mt-6">
-            <h3 className="text-white font-semibold mb-4 flex items-center gap-2">
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div style={{ marginTop: '32px' }}>
+            {/* Header */}
+            <h3 style={{
+                color: 'white',
+                fontSize: '16px',
+                fontWeight: 600,
+                margin: '0 0 20px 0',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px'
+            }}>
+                <svg style={{ width: '20px', height: '20px' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
                 </svg>
                 Comments ({comments.length})
             </h3>
 
-            {/* Add comment form */}
-            <form onSubmit={handleSubmit} className="mb-6">
-                <div className="flex gap-3">
-                    <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#e50914] to-[#b20710] flex items-center justify-center flex-shrink-0">
-                        <span className="text-white text-xs">You</span>
-                    </div>
-                    <div className="flex-1 flex gap-2">
-                        <input
-                            type="text"
-                            value={replyingTo ? '' : newComment}
-                            onChange={(e) => setNewComment(e.target.value)}
-                            disabled={!!replyingTo}
-                            placeholder="Add a comment..."
-                            className="flex-1 bg-[#1f1f1f] border border-white/10 rounded-lg px-4 py-3 text-white placeholder-[#666] focus:outline-none focus:border-[#e50914] transition-colors disabled:opacity-50"
-                        />
-                        <button
-                            type="submit"
-                            disabled={isSubmitting || !newComment.trim() || !!replyingTo}
-                            className="btn-primary px-6 py-3 disabled:opacity-50"
-                        >
-                            {isSubmitting ? (
-                                <span className="spinner w-4 h-4 border-2"></span>
-                            ) : (
-                                'Post'
-                            )}
-                        </button>
-                    </div>
-                </div>
+            {/* New comment form */}
+            <form onSubmit={handleSubmit} style={{ display: 'flex', gap: '12px', marginBottom: '24px' }}>
+                <input
+                    type="text"
+                    value={newComment}
+                    onChange={(e) => setNewComment(e.target.value)}
+                    placeholder="Add a comment..."
+                    style={inputStyle}
+                    onFocus={(e) => e.target.style.borderColor = '#e50914'}
+                    onBlur={(e) => e.target.style.borderColor = 'rgba(255, 255, 255, 0.1)'}
+                />
+                <button
+                    type="submit"
+                    disabled={isSubmitting || !newComment.trim()}
+                    style={{
+                        ...buttonStyle,
+                        opacity: isSubmitting || !newComment.trim() ? 0.5 : 1,
+                        cursor: isSubmitting || !newComment.trim() ? 'not-allowed' : 'pointer'
+                    }}
+                >
+                    {isSubmitting ? (
+                        <span>Posting...</span>
+                    ) : (
+                        <span>Post</span>
+                    )}
+                </button>
             </form>
 
             {/* Comments list */}
-            <div className="divide-y divide-white/5">
+            <div style={{ display: 'flex', flexDirection: 'column' }}>
                 {topLevelComments.length === 0 ? (
-                    <p className="text-[#666] text-center py-8">
+                    <p style={{ color: '#666', fontSize: '14px', textAlign: 'center', padding: '32px 0' }}>
                         No comments yet. Be the first to comment!
                     </p>
                 ) : (
-                    topLevelComments.map(comment => renderComment(comment))
+                    topLevelComments.map(comment => (
+                        <CommentItem key={comment.id} comment={comment} />
+                    ))
                 )}
             </div>
         </div>

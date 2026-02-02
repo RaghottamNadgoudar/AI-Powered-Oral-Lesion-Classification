@@ -15,7 +15,7 @@ import {
 } from '../services/communityService';
 
 function CommunityPage() {
-    const [activeTab, setActiveTab] = useState('questions'); // 'questions' | 'stories'
+    const [activeTab, setActiveTab] = useState('questions');
     const [posts, setPosts] = useState([]);
     const [stories, setStories] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -100,78 +100,155 @@ function CommunityPage() {
         setDetailComments(prev => [...prev, comment]);
     };
 
-    // Render detail view for post
+    // Common styles
+    const pageStyle = {
+        minHeight: '100vh',
+        paddingTop: '100px',
+        paddingBottom: '48px',
+        paddingLeft: '24px',
+        paddingRight: '24px'
+    };
+
+    const containerStyle = {
+        maxWidth: '900px',
+        margin: '0 auto'
+    };
+
+    const backButtonStyle = {
+        display: 'flex',
+        alignItems: 'center',
+        gap: '8px',
+        color: '#888',
+        background: 'none',
+        border: 'none',
+        cursor: 'pointer',
+        marginBottom: '24px',
+        fontSize: '14px',
+        fontWeight: 500,
+        padding: 0,
+        transition: 'color 0.2s'
+    };
+
+    const articleStyle = {
+        background: 'linear-gradient(145deg, rgba(42, 42, 42, 0.9) 0%, rgba(26, 26, 26, 0.95) 100%)',
+        border: '1px solid rgba(255, 255, 255, 0.1)',
+        borderRadius: '20px',
+        padding: '32px'
+    };
+
+    const badgeStyle = (color) => ({
+        padding: '8px 16px',
+        borderRadius: '20px',
+        fontSize: '13px',
+        fontWeight: 600,
+        display: 'inline-flex',
+        alignItems: 'center',
+        gap: '6px',
+        backgroundColor: `${color}20`,
+        color: color,
+        border: `1px solid ${color}40`
+    });
+
+    // Detail view for post
     if (selectedPost) {
         const category = CATEGORIES[selectedPost.category] || CATEGORIES.general;
         const profile = selectedPost.anonymous_profiles;
 
         return (
-            <div className="min-h-screen pt-24 pb-12 px-6">
-                <div className="max-w-4xl mx-auto">
-                    {/* Back button */}
+            <div style={pageStyle}>
+                <div style={containerStyle}>
                     <button
                         onClick={handleBack}
-                        className="flex items-center gap-2 text-[#b3b3b3] hover:text-white mb-6 transition-colors"
+                        style={backButtonStyle}
+                        onMouseEnter={(e) => e.target.style.color = 'white'}
+                        onMouseLeave={(e) => e.target.style.color = '#888'}
                     >
-                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg style={{ width: '20px', height: '20px' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
                         </svg>
                         Back to Questions
                     </button>
 
-                    {/* Post content */}
-                    <article className="glass-card p-8 animate-fade-in">
+                    <article style={articleStyle}>
                         {/* Header */}
-                        <div className="flex items-start justify-between mb-6">
-                            <div className="flex items-center gap-4">
+                        <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: '24px', flexWrap: 'wrap', gap: '16px' }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
                                 <img
                                     src={getAvatarUrl(profile?.avatar_seed || 'default')}
                                     alt="Avatar"
-                                    className="w-12 h-12 rounded-full bg-[#2a2a2a]"
+                                    style={{
+                                        width: '52px',
+                                        height: '52px',
+                                        borderRadius: '50%',
+                                        backgroundColor: '#2a2a2a',
+                                        border: '2px solid rgba(255, 255, 255, 0.1)'
+                                    }}
                                 />
-                                <div>
-                                    <p className="text-white font-medium">
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                                    <p style={{ color: 'white', fontWeight: 600, fontSize: '15px', margin: 0 }}>
                                         {profile?.display_name || 'Anonymous'}
                                     </p>
-                                    <p className="text-[#b3b3b3] text-sm">
+                                    <p style={{ color: '#888', fontSize: '13px', margin: 0 }}>
                                         {formatTimeAgo(selectedPost.created_at)}
                                     </p>
                                 </div>
                             </div>
-                            <span
-                                className="px-4 py-2 rounded-full text-sm font-medium flex items-center gap-2"
-                                style={{
-                                    backgroundColor: `${category.color}20`,
-                                    color: category.color,
-                                    border: `1px solid ${category.color}40`
-                                }}
-                            >
+                            <span style={badgeStyle(category.color)}>
                                 <span>{category.icon}</span>
                                 {category.label}
                             </span>
                         </div>
 
                         {/* Title & Content */}
-                        <h1 className="text-2xl font-bold text-white mb-4">
+                        <h1 style={{ fontSize: '24px', fontWeight: 700, color: 'white', marginBottom: '16px', lineHeight: 1.4 }}>
                             {selectedPost.title}
                         </h1>
-                        <p className="text-[#b3b3b3] text-lg leading-relaxed whitespace-pre-line">
+                        <p style={{ color: '#a0a0a0', fontSize: '16px', lineHeight: 1.8, whiteSpace: 'pre-line', margin: 0 }}>
                             {selectedPost.content}
                         </p>
 
                         {/* Stats */}
-                        <div className="flex items-center gap-6 mt-8 pt-6 border-t border-white/10">
-                            <button className="flex items-center gap-2 text-[#b3b3b3] hover:text-[#e50914] transition-colors">
-                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <div style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '24px',
+                            marginTop: '32px',
+                            paddingTop: '24px',
+                            borderTop: '1px solid rgba(255, 255, 255, 0.1)'
+                        }}>
+                            <button style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '8px',
+                                color: '#888',
+                                background: 'none',
+                                border: 'none',
+                                cursor: 'pointer',
+                                fontSize: '14px',
+                                fontWeight: 600,
+                                padding: 0
+                            }}>
+                                <svg style={{ width: '20px', height: '20px' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
                                 </svg>
-                                <span className="font-medium">{selectedPost.upvote_count || 0}</span>
+                                <span>{selectedPost.upvote_count || 0}</span>
                             </button>
-                            <button className="flex items-center gap-2 text-[#46d369] transition-colors">
-                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <button style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '8px',
+                                color: '#46d369',
+                                background: 'none',
+                                border: 'none',
+                                cursor: 'pointer',
+                                fontSize: '14px',
+                                fontWeight: 600,
+                                padding: 0
+                            }}>
+                                <svg style={{ width: '20px', height: '20px' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
                                 </svg>
-                                <span className="font-medium">Support</span>
+                                <span>Support</span>
                             </button>
                         </div>
 
@@ -187,87 +264,106 @@ function CommunityPage() {
         );
     }
 
-    // Render detail view for story
+    // Detail view for story
     if (selectedStory) {
         const diagnosisType = DIAGNOSIS_TYPES[selectedStory.diagnosis_type] || DIAGNOSIS_TYPES.other;
         const profile = selectedStory.anonymous_profiles;
 
         return (
-            <div className="min-h-screen pt-24 pb-12 px-6">
-                <div className="max-w-4xl mx-auto">
-                    {/* Back button */}
+            <div style={pageStyle}>
+                <div style={containerStyle}>
                     <button
                         onClick={handleBack}
-                        className="flex items-center gap-2 text-[#b3b3b3] hover:text-white mb-6 transition-colors"
+                        style={backButtonStyle}
+                        onMouseEnter={(e) => e.target.style.color = 'white'}
+                        onMouseLeave={(e) => e.target.style.color = '#888'}
                     >
-                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg style={{ width: '20px', height: '20px' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
                         </svg>
                         Back to Recovery Stories
                     </button>
 
-                    {/* Story content */}
-                    <article className="glass-card p-8 animate-fade-in">
+                    <article style={articleStyle}>
                         {/* Header */}
-                        <div className="flex items-center gap-4 mb-6">
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '14px', marginBottom: '24px' }}>
                             <img
                                 src={getAvatarUrl(profile?.avatar_seed || 'default')}
                                 alt="Avatar"
-                                className="w-12 h-12 rounded-full bg-[#2a2a2a]"
+                                style={{
+                                    width: '52px',
+                                    height: '52px',
+                                    borderRadius: '50%',
+                                    backgroundColor: '#2a2a2a',
+                                    border: '2px solid rgba(255, 255, 255, 0.1)'
+                                }}
                             />
-                            <div>
-                                <p className="text-white font-medium">
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                                <p style={{ color: 'white', fontWeight: 600, fontSize: '15px', margin: 0 }}>
                                     {profile?.display_name || 'Anonymous'}
                                 </p>
-                                <p className="text-[#b3b3b3] text-sm">
+                                <p style={{ color: '#888', fontSize: '13px', margin: 0 }}>
                                     {formatTimeAgo(selectedStory.created_at)}
                                 </p>
                             </div>
                         </div>
 
                         {/* Title */}
-                        <h1 className="text-2xl font-bold text-white mb-4">
+                        <h1 style={{ fontSize: '24px', fontWeight: 700, color: 'white', marginBottom: '20px', lineHeight: 1.4 }}>
                             {selectedStory.title}
                         </h1>
 
                         {/* Tags */}
-                        <div className="flex flex-wrap gap-3 mb-6">
-                            <span
-                                className="px-4 py-2 rounded-full text-sm font-medium"
-                                style={{
-                                    backgroundColor: `${diagnosisType.color}20`,
-                                    color: diagnosisType.color,
-                                    border: `1px solid ${diagnosisType.color}40`
-                                }}
-                            >
+                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px', marginBottom: '24px' }}>
+                            <span style={badgeStyle(diagnosisType.color)}>
                                 Diagnosis: {diagnosisType.label}
                             </span>
                             {selectedStory.current_status && (
-                                <span className="px-4 py-2 rounded-full text-sm font-medium bg-[#46d369]/20 text-[#46d369] border border-[#46d369]/40">
+                                <span style={badgeStyle('#46d369')}>
                                     ✨ {selectedStory.current_status.replace('_', ' ')}
                                 </span>
                             )}
                             {selectedStory.recovery_duration && (
-                                <span className="px-4 py-2 rounded-full text-sm font-medium bg-white/5 text-[#b3b3b3] border border-white/10">
+                                <span style={{
+                                    padding: '8px 16px',
+                                    borderRadius: '20px',
+                                    fontSize: '13px',
+                                    fontWeight: 500,
+                                    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+                                    color: '#a0a0a0',
+                                    border: '1px solid rgba(255, 255, 255, 0.1)'
+                                }}>
                                     🕐 Recovery: {selectedStory.recovery_duration}
                                 </span>
                             )}
                         </div>
 
                         {/* Story content */}
-                        <div className="prose prose-invert max-w-none">
-                            <p className="text-[#b3b3b3] text-lg leading-relaxed whitespace-pre-line">
-                                {selectedStory.story_content}
-                            </p>
-                        </div>
+                        <p style={{ color: '#a0a0a0', fontSize: '16px', lineHeight: 1.8, whiteSpace: 'pre-line', margin: 0 }}>
+                            {selectedStory.story_content}
+                        </p>
 
                         {/* Treatment summary */}
                         {selectedStory.treatment_summary && (
-                            <div className="mt-8 p-6 bg-[#1f1f1f] rounded-xl border border-white/10">
-                                <h3 className="text-white font-semibold mb-3 flex items-center gap-2">
+                            <div style={{
+                                marginTop: '32px',
+                                padding: '24px',
+                                backgroundColor: '#1f1f1f',
+                                borderRadius: '16px',
+                                border: '1px solid rgba(255, 255, 255, 0.1)'
+                            }}>
+                                <h3 style={{
+                                    color: 'white',
+                                    fontWeight: 600,
+                                    marginBottom: '12px',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: '8px',
+                                    fontSize: '16px'
+                                }}>
                                     <span>💊</span> Treatment Summary
                                 </h3>
-                                <p className="text-[#b3b3b3] leading-relaxed">
+                                <p style={{ color: '#a0a0a0', lineHeight: 1.7, margin: 0 }}>
                                     {selectedStory.treatment_summary}
                                 </p>
                             </div>
@@ -275,27 +371,70 @@ function CommunityPage() {
 
                         {/* Helpful tips */}
                         {selectedStory.helpful_tips && (
-                            <div className="mt-6 p-6 bg-[#46d369]/10 rounded-xl border border-[#46d369]/20">
-                                <h3 className="text-[#46d369] font-semibold mb-3 flex items-center gap-2">
+                            <div style={{
+                                marginTop: '24px',
+                                padding: '24px',
+                                backgroundColor: 'rgba(70, 211, 105, 0.1)',
+                                borderRadius: '16px',
+                                border: '1px solid rgba(70, 211, 105, 0.2)'
+                            }}>
+                                <h3 style={{
+                                    color: '#46d369',
+                                    fontWeight: 600,
+                                    marginBottom: '12px',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: '8px',
+                                    fontSize: '16px'
+                                }}>
                                     <span>💡</span> Helpful Tips from the Author
                                 </h3>
-                                <p className="text-[#b3b3b3] leading-relaxed">
+                                <p style={{ color: '#a0a0a0', lineHeight: 1.7, margin: 0 }}>
                                     {selectedStory.helpful_tips}
                                 </p>
                             </div>
                         )}
 
                         {/* Stats */}
-                        <div className="flex items-center gap-6 mt-8 pt-6 border-t border-white/10">
-                            <button className="flex items-center gap-2 text-[#b3b3b3] hover:text-[#e50914] transition-colors">
-                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <div style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '24px',
+                            marginTop: '32px',
+                            paddingTop: '24px',
+                            borderTop: '1px solid rgba(255, 255, 255, 0.1)'
+                        }}>
+                            <button style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '8px',
+                                color: '#888',
+                                background: 'none',
+                                border: 'none',
+                                cursor: 'pointer',
+                                fontSize: '14px',
+                                fontWeight: 600,
+                                padding: 0
+                            }}>
+                                <svg style={{ width: '20px', height: '20px' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
                                 </svg>
-                                <span className="font-medium">{selectedStory.upvote_count || 0}</span>
+                                <span>{selectedStory.upvote_count || 0}</span>
                             </button>
-                            <button className="flex items-center gap-2 text-[#f5c518] transition-colors">
+                            <button style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '8px',
+                                color: '#f5c518',
+                                background: 'none',
+                                border: 'none',
+                                cursor: 'pointer',
+                                fontSize: '14px',
+                                fontWeight: 600,
+                                padding: 0
+                            }}>
                                 <span>🙏</span>
-                                <span className="font-medium">Thank You</span>
+                                <span>Thank You</span>
                             </button>
                         </div>
 
@@ -311,64 +450,128 @@ function CommunityPage() {
         );
     }
 
-    // Main list view
+    // Main list view - use wider container
+    const mainContainerStyle = {
+        maxWidth: '1200px',
+        margin: '0 auto'
+    };
+
+    const primaryButtonStyle = {
+        padding: '14px 28px',
+        borderRadius: '12px',
+        border: 'none',
+        background: 'linear-gradient(135deg, #e50914, #b20710)',
+        color: 'white',
+        fontSize: '14px',
+        fontWeight: 600,
+        cursor: 'pointer',
+        display: 'flex',
+        alignItems: 'center',
+        gap: '8px',
+        boxShadow: '0 4px 15px rgba(229, 9, 20, 0.3)',
+        transition: 'all 0.2s',
+        flexShrink: 0
+    };
+
+    const secondaryButtonStyle = {
+        padding: '12px 24px',
+        borderRadius: '10px',
+        border: '2px solid rgba(255, 255, 255, 0.2)',
+        background: 'transparent',
+        color: '#b3b3b3',
+        fontSize: '14px',
+        fontWeight: 500,
+        cursor: 'pointer'
+    };
+
     return (
-        <div className="min-h-screen pt-28 pb-12 px-6">
-            <div className="max-w-6xl mx-auto">
+        <div style={pageStyle}>
+            <div style={mainContainerStyle}>
                 {/* Header */}
-                <div className="text-center mb-8 animate-fade-in pt-4">
-                    <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">
-                        <span className="gradient-text">Community</span> Support
+                <div style={{ textAlign: 'center', marginBottom: '40px' }}>
+                    <h1 style={{ fontSize: 'clamp(2rem, 5vw, 3rem)', fontWeight: 'bold', color: 'white', marginBottom: '16px' }}>
+                        <span style={{ background: 'linear-gradient(135deg, #e50914, #ff6b6b)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Community</span> Support
                     </h1>
-                    <p className="text-[#b3b3b3] text-lg max-w-2xl mx-auto">
+                    <p style={{ color: '#a0a0a0', fontSize: '18px', maxWidth: '640px', margin: '0 auto', lineHeight: 1.7 }}>
                         Connect anonymously with others, ask questions, and share your recovery journey.
                         Together, we reduce fear and stigma around oral health.
                     </p>
                 </div>
 
                 {/* Tabs */}
-                <div className="flex justify-center gap-4 mb-8">
+                <div style={{ display: 'flex', justifyContent: 'center', gap: '16px', marginBottom: '40px' }}>
                     <button
                         onClick={() => setActiveTab('questions')}
-                        className={`px-8 py-4 rounded-xl font-medium transition-all ${activeTab === 'questions'
-                            ? 'bg-gradient-to-r from-[#e50914] to-[#b20710] text-white shadow-lg shadow-[#e50914]/30'
-                            : 'bg-[#2a2a2a] text-[#b3b3b3] hover:bg-[#3a3a3a]'
-                            }`}
+                        style={{
+                            padding: '16px 32px',
+                            borderRadius: '12px',
+                            fontWeight: 600,
+                            border: 'none',
+                            cursor: 'pointer',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '10px',
+                            transition: 'all 0.2s',
+                            background: activeTab === 'questions' ? 'linear-gradient(135deg, #e50914, #b20710)' : '#2a2a2a',
+                            color: activeTab === 'questions' ? 'white' : '#888',
+                            boxShadow: activeTab === 'questions' ? '0 8px 24px rgba(229, 9, 20, 0.3)' : 'none'
+                        }}
                     >
-                        <span className="flex items-center gap-2">
-                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                            </svg>
-                            Expert Q&A
-                        </span>
+                        <svg style={{ width: '20px', height: '20px' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        Expert Q&A
                     </button>
                     <button
                         onClick={() => setActiveTab('stories')}
-                        className={`px-8 py-4 rounded-xl font-medium transition-all ${activeTab === 'stories'
-                            ? 'bg-gradient-to-r from-[#e50914] to-[#b20710] text-white shadow-lg shadow-[#e50914]/30'
-                            : 'bg-[#2a2a2a] text-[#b3b3b3] hover:bg-[#3a3a3a]'
-                            }`}
+                        style={{
+                            padding: '16px 32px',
+                            borderRadius: '12px',
+                            fontWeight: 600,
+                            border: 'none',
+                            cursor: 'pointer',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '10px',
+                            transition: 'all 0.2s',
+                            background: activeTab === 'stories' ? 'linear-gradient(135deg, #e50914, #b20710)' : '#2a2a2a',
+                            color: activeTab === 'stories' ? 'white' : '#888',
+                            boxShadow: activeTab === 'stories' ? '0 8px 24px rgba(229, 9, 20, 0.3)' : 'none'
+                        }}
                     >
-                        <span className="flex items-center gap-2">
-                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                            </svg>
-                            Recovery Stories
-                        </span>
+                        <svg style={{ width: '20px', height: '20px' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                        </svg>
+                        Recovery Stories
                     </button>
                 </div>
 
-                {/* Filters & Create Button */}
-                <div className="flex items-center justify-between mb-8">
-                    <div className="flex gap-2">
+                {/* Filters & Create Button Row */}
+                <div style={{
+                    display: 'flex',
+                    flexDirection: 'row',
+                    flexWrap: 'wrap',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    marginBottom: '32px',
+                    gap: '16px'
+                }}>
+                    {/* Filters */}
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', flex: '1 1 auto' }}>
                         {activeTab === 'questions' ? (
                             <>
                                 <button
                                     onClick={() => setSelectedCategory(null)}
-                                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${!selectedCategory
-                                        ? 'bg-white/10 text-white'
-                                        : 'bg-transparent text-[#b3b3b3] hover:bg-white/5'
-                                        }`}
+                                    style={{
+                                        padding: '10px 18px',
+                                        borderRadius: '10px',
+                                        fontSize: '13px',
+                                        fontWeight: 600,
+                                        border: 'none',
+                                        cursor: 'pointer',
+                                        background: !selectedCategory ? 'rgba(255,255,255,0.15)' : 'transparent',
+                                        color: !selectedCategory ? 'white' : '#888'
+                                    }}
                                 >
                                     All
                                 </button>
@@ -376,10 +579,19 @@ function CommunityPage() {
                                     <button
                                         key={key}
                                         onClick={() => setSelectedCategory(key)}
-                                        className={`px-4 py-2 rounded-lg text-sm font-medium transition-all flex items-center gap-1 ${selectedCategory === key
-                                            ? 'bg-white/10 text-white'
-                                            : 'bg-transparent text-[#b3b3b3] hover:bg-white/5'
-                                            }`}
+                                        style={{
+                                            padding: '10px 18px',
+                                            borderRadius: '10px',
+                                            fontSize: '13px',
+                                            fontWeight: 600,
+                                            border: 'none',
+                                            cursor: 'pointer',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            gap: '6px',
+                                            background: selectedCategory === key ? 'rgba(255,255,255,0.15)' : 'transparent',
+                                            color: selectedCategory === key ? 'white' : '#888'
+                                        }}
                                     >
                                         <span>{cat.icon}</span>
                                         {cat.label}
@@ -390,10 +602,16 @@ function CommunityPage() {
                             <>
                                 <button
                                     onClick={() => setSelectedDiagnosis(null)}
-                                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${!selectedDiagnosis
-                                        ? 'bg-white/10 text-white'
-                                        : 'bg-transparent text-[#b3b3b3] hover:bg-white/5'
-                                        }`}
+                                    style={{
+                                        padding: '10px 18px',
+                                        borderRadius: '10px',
+                                        fontSize: '13px',
+                                        fontWeight: 600,
+                                        border: 'none',
+                                        cursor: 'pointer',
+                                        background: !selectedDiagnosis ? 'rgba(255,255,255,0.15)' : 'transparent',
+                                        color: !selectedDiagnosis ? 'white' : '#888'
+                                    }}
                                 >
                                     All Stories
                                 </button>
@@ -401,11 +619,16 @@ function CommunityPage() {
                                     <button
                                         key={key}
                                         onClick={() => setSelectedDiagnosis(key)}
-                                        className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${selectedDiagnosis === key
-                                            ? 'bg-white/10 text-white'
-                                            : 'bg-transparent text-[#b3b3b3] hover:bg-white/5'
-                                            }`}
-                                        style={{ color: selectedDiagnosis === key ? val.color : undefined }}
+                                        style={{
+                                            padding: '10px 18px',
+                                            borderRadius: '10px',
+                                            fontSize: '13px',
+                                            fontWeight: 600,
+                                            border: 'none',
+                                            cursor: 'pointer',
+                                            background: selectedDiagnosis === key ? 'rgba(255,255,255,0.15)' : 'transparent',
+                                            color: selectedDiagnosis === key ? val.color : '#888'
+                                        }}
                                     >
                                         {val.label}
                                     </button>
@@ -414,11 +637,12 @@ function CommunityPage() {
                         )}
                     </div>
 
+                    {/* Create Button */}
                     <button
                         onClick={() => handleCreateClick(activeTab === 'questions' ? 'post' : 'story')}
-                        className="btn-primary"
+                        style={primaryButtonStyle}
                     >
-                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg style={{ width: '20px', height: '20px' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
                         </svg>
                         {activeTab === 'questions' ? 'Ask Question' : 'Share Story'}
@@ -427,59 +651,60 @@ function CommunityPage() {
 
                 {/* Content Grid */}
                 {loading ? (
-                    <div className="flex justify-center items-center py-20">
-                        <div className="spinner"></div>
+                    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '80px 0' }}>
+                        <div style={{
+                            width: '48px',
+                            height: '48px',
+                            border: '4px solid rgba(229, 9, 20, 0.2)',
+                            borderTopColor: '#e50914',
+                            borderRadius: '50%',
+                            animation: 'spin 1s linear infinite'
+                        }}></div>
                     </div>
                 ) : (
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div style={{
+                        display: 'grid',
+                        gridTemplateColumns: 'repeat(auto-fill, minmax(340px, 1fr))',
+                        gap: '24px'
+                    }}>
                         {activeTab === 'questions' ? (
                             posts.length === 0 ? (
-                                <div className="col-span-2 text-center py-20">
-                                    <p className="text-[#666] text-lg mb-4">No questions yet</p>
+                                <div style={{ gridColumn: '1 / -1', textAlign: 'center', padding: '80px 0' }}>
+                                    <p style={{ color: '#666', fontSize: '18px', marginBottom: '20px' }}>No questions yet</p>
                                     <button
                                         onClick={() => handleCreateClick('post')}
-                                        className="btn-secondary"
+                                        style={secondaryButtonStyle}
                                     >
                                         Be the first to ask a question
                                     </button>
                                 </div>
                             ) : (
-                                posts.map((post, index) => (
-                                    <div
+                                posts.map((post) => (
+                                    <PostCard
                                         key={post.id}
-                                        className="animate-fade-in"
-                                        style={{ animationDelay: `${index * 0.1}s` }}
-                                    >
-                                        <PostCard
-                                            post={post}
-                                            onClick={() => handlePostClick(post)}
-                                        />
-                                    </div>
+                                        post={post}
+                                        onClick={() => handlePostClick(post)}
+                                    />
                                 ))
                             )
                         ) : (
                             stories.length === 0 ? (
-                                <div className="col-span-2 text-center py-20">
-                                    <p className="text-[#666] text-lg mb-4">No recovery stories yet</p>
+                                <div style={{ gridColumn: '1 / -1', textAlign: 'center', padding: '80px 0' }}>
+                                    <p style={{ color: '#666', fontSize: '18px', marginBottom: '20px' }}>No recovery stories yet</p>
                                     <button
                                         onClick={() => handleCreateClick('story')}
-                                        className="btn-secondary"
+                                        style={secondaryButtonStyle}
                                     >
                                         Share your recovery journey
                                     </button>
                                 </div>
                             ) : (
-                                stories.map((story, index) => (
-                                    <div
+                                stories.map((story) => (
+                                    <StoryCard
                                         key={story.id}
-                                        className="animate-fade-in"
-                                        style={{ animationDelay: `${index * 0.1}s` }}
-                                    >
-                                        <StoryCard
-                                            story={story}
-                                            onClick={() => handleStoryClick(story)}
-                                        />
-                                    </div>
+                                        story={story}
+                                        onClick={() => handleStoryClick(story)}
+                                    />
                                 ))
                             )
                         )}
@@ -487,14 +712,21 @@ function CommunityPage() {
                 )}
 
                 {/* Anonymity Notice */}
-                <div className="mt-12 p-6 glass-card text-center">
-                    <div className="flex items-center justify-center gap-3 mb-4">
-                        <svg className="w-8 h-8 text-[#46d369]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div style={{
+                    marginTop: '48px',
+                    padding: '28px',
+                    textAlign: 'center',
+                    background: 'linear-gradient(145deg, rgba(42, 42, 42, 0.9) 0%, rgba(26, 26, 26, 0.95) 100%)',
+                    border: '1px solid rgba(255, 255, 255, 0.1)',
+                    borderRadius: '16px'
+                }}>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '14px', marginBottom: '16px' }}>
+                        <svg style={{ width: '32px', height: '32px', color: '#46d369' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
                         </svg>
-                        <h3 className="text-white font-semibold text-lg">Your Privacy is Protected</h3>
+                        <h3 style={{ color: 'white', fontWeight: 600, fontSize: '18px', margin: 0 }}>Your Privacy is Protected</h3>
                     </div>
-                    <p className="text-[#b3b3b3] max-w-2xl mx-auto">
+                    <p style={{ color: '#a0a0a0', maxWidth: '640px', margin: '0 auto', lineHeight: 1.7 }}>
                         All posts and stories are anonymous. A random display name and avatar are generated
                         for you automatically. Your real identity is never shared or stored.
                     </p>
@@ -508,6 +740,13 @@ function CommunityPage() {
                 type={modalType}
                 onSuccess={handleSuccess}
             />
+
+            {/* Keyframe animation for spinner */}
+            <style>{`
+                @keyframes spin {
+                    to { transform: rotate(360deg); }
+                }
+            `}</style>
         </div>
     );
 }
