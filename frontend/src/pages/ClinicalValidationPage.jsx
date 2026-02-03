@@ -9,19 +9,6 @@ function ClinicalValidationPage() {
             title: 'Case Study #1',
             image: '/case-studies/case1_benign.jpg',
             prediction: 'Benign',
-            confidence: 99.2,
-            isMalignant: false,
-            level1: { classification: 'Unhealthy', confidence: 93.4 },
-            level2: { classification: 'Benign', confidence: 99.2 },
-            description: 'Oral lesion with benign characteristics detected during field testing.',
-            source: 'KIMS Hubballi',
-            date: 'January 2026'
-        },
-        {
-            id: 2,
-            title: 'Case Study #2',
-            image: '/case-studies/case2_benign.jpg',
-            prediction: 'Benign',
             confidence: 100.0,
             isMalignant: false,
             level1: { classification: 'Unhealthy', confidence: 72.8 },
@@ -31,9 +18,9 @@ function ClinicalValidationPage() {
             date: 'January 2026'
         },
         {
-            id: 3,
-            title: 'Case Study #3',
-            image: '/case-studies/case3_malignant.jpg',
+            id: 2,
+            title: 'Case Study #2',
+            image: '/case-studies/case2_malignant.jpg',
             prediction: 'Malignant',
             confidence: 97.5,
             isMalignant: true,
@@ -44,9 +31,9 @@ function ClinicalValidationPage() {
             date: 'January 2026'
         },
         {
-            id: 4,
-            title: 'Case Study #4',
-            image: '/case-studies/case4_benign.jpg',
+            id: 3,
+            title: 'Case Study #3',
+            image: '/case-studies/case3_benign.jpg',
             prediction: 'Benign',
             confidence: 100.0,
             isMalignant: false,
@@ -57,9 +44,9 @@ function ClinicalValidationPage() {
             date: 'January 2026'
         },
         {
-            id: 5,
-            title: 'Case Study #5',
-            image: '/case-studies/case5_benign.jpg',
+            id: 4,
+            title: 'Case Study #4',
+            image: '/case-studies/case4_benign.jpg',
             prediction: 'Benign',
             confidence: 99.7,
             isMalignant: false,
@@ -69,9 +56,9 @@ function ClinicalValidationPage() {
             source: 'Deeksha Dental Clinic, Tumkur',
         },
         {
-            id: 6,
-            title: 'Case Study #6',
-            image: '/case-studies/case6_malignant.png',
+            id: 5,
+            title: 'Case Study #5',
+            image: '/case-studies/case5_malignant.png',
             prediction: 'Malignant',
             confidence: 99.8,
             isMalignant: true,
@@ -82,9 +69,9 @@ function ClinicalValidationPage() {
             date: 'January 2026'
         },
         {
-            id: 7,
-            title: 'Case Study #7',
-            image: '/case-studies/case7_benign.png',
+            id: 6,
+            title: 'Case Study #6',
+            image: '/case-studies/case6_benign.png',
             prediction: 'Benign',
             confidence: 98.7,
             isMalignant: false,
@@ -95,9 +82,9 @@ function ClinicalValidationPage() {
             date: 'January 2026'
         },
         {
-            id: 8,
-            title: 'Case Study #8',
-            image: '/case-studies/case8_malignant.jpg',
+            id: 7,
+            title: 'Case Study #7',
+            image: '/case-studies/case7_malignant.jpg',
             prediction: 'Malignant',
             confidence: 99.6,
             isMalignant: true,
@@ -108,9 +95,9 @@ function ClinicalValidationPage() {
             date: 'February 2026'
         },
         {
-            id: 9,
-            title: 'Case Study #9',
-            image: '/case-studies/case9_healthy.jpg',
+            id: 8,
+            title: 'Case Study #8',
+            image: '/case-studies/case8_healthy.jpg',
             prediction: 'Healthy',
             confidence: 64.7,
             isMalignant: false,
@@ -121,9 +108,9 @@ function ClinicalValidationPage() {
             date: 'February 2026'
         },
         {
-            id: 10,
-            title: 'Case Study #10',
-            image: '/case-studies/case10_malignant.jpg',
+            id: 9,
+            title: 'Case Study #9',
+            image: '/case-studies/case9_malignant.jpg',
             prediction: 'Malignant',
             confidence: 90.7,
             isMalignant: true,
@@ -136,7 +123,7 @@ function ClinicalValidationPage() {
     ];
 
     const stats = [
-        { label: 'Cases Tested', value: '10', icon: '📊' },
+        { label: 'Cases Tested', value: '9', icon: '📊' },
         { label: 'Testing Sources', value: 'KIMS Hubballi & Deeksha Dental Clinic', icon: '🏥' }
     ];
 
