@@ -4,7 +4,7 @@ function AboutPage() {
         { name: 'Flask', description: 'Backend API server', icon: '🐍' },
         { name: 'CLIP Model', description: 'OpenAI vision-language model', icon: '🧠' },
         { name: 'Gemini AI', description: 'Health suggestions generation', icon: '✨' },
-        { name: 'OGL (WebGL)', description: 'Animated background rendering', icon: '🎨' }
+        { name: 'TensorFlow', description: 'Deep Convolutional Neural Network (CNN)', icon: '🤖' }
     ];
 
     const classificationDetails = [
